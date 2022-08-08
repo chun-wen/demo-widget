@@ -1,5 +1,6 @@
 - v1.1.28
 - Remove sessionID console.
+- Revert 1.1.27 commit.
 
 - v1.1.27
 1. Update package-lock.json
