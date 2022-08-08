@@ -16,6 +16,19 @@ export function createNewMessage(text, sender, nextMessageIsTooltip, hidden) {
   });
 }
 
+export function getMessageFromServer(text, sender, timestamp, nextMessageIsTooltip, hidden) {
+  return Map({
+    type: MESSAGES_TYPES.TEXT,
+    component: Message,
+    text,
+    sender,
+    showAvatar: sender === MESSAGE_SENDER.RESPONSE,
+    timestamp,
+    nextMessageIsTooltip,
+    hidden
+  });
+}
+
 export function createCarousel(carousel, sender) {
   return Map({
     type: MESSAGES_TYPES.CAROUSEL,
