@@ -1,3 +1,6 @@
+- v1.1.28
+- Remove sessionID console.
+
 - v1.1.27
 1. Update package-lock.json
 

@@ -1,12 +1,12 @@
 {
-    "name": "@josh.chou/rasa-webchat",
-    "version": "1.1.27",
+    "name": "test-rasa-webchat",
+    "version": "1.1.28",
     "description": "Chat web widget for React apps and Rasa Core chatbots",
     "module": "module/index.js",
     "main": "lib/index.js",
     "repository": {
-        "type":"git",
-        "url":"https://github.com/IT-FE-Josh/rasa-webchat.git"
+        "type": "git",
+        "url": "https://github.com/IT-FE-Josh/rasa-webchat.git"
     },
     "author": "",
     "license": "Apache-2.0",
