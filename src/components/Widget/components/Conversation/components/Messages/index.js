@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, useRef } from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { connect } from 'react-redux';
 
 import { MESSAGES_TYPES } from 'constants';
@@ -8,6 +9,9 @@ import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from '
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
+
+import { addAllOldMessage } from "actions";
+import fetchOldMessage from "./server/fetchData";
 
 const isToday = (date) => {
   const today = new Date();
@@ -35,6 +39,13 @@ const isAgentResponse = (message) => {
   return message ? message.startsWith(prefix) : false;
 };
 class Messages extends Component {
+  constructor() {
+    super();
+    this.state = {
+      hasMoreOldMessage: true,
+    }
+    this.messagesRef = React.createRef(null)
+  }
   componentDidMount() {
     scrollToBottom();
   }
@@ -84,13 +95,17 @@ class Messages extends Component {
 
   render() {
     const {
-        displayTypingIndication,
-        profileAvatar,
-        agentAvatar,
-        liveAgent,
-        connected,
-        language,
-        showUpdateUI,
+      displayTypingIndication,
+      profileAvatar,
+      agentAvatar,
+      liveAgent,
+      connected,
+      language,
+      showUpdateUI,
+      messages,
+      oldMessageURL,
+      sessionId,
+      dispatch
     } = this.props;
 
     const renderMessages = () => {
@@ -156,34 +171,46 @@ class Messages extends Component {
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
 
-    return !connected ? (
+    const handleFetchNewMessage = () => {
+      const result = fetchOldMessage(oldMessageURL, sessionId);
+      if (result === []) {
+        this.setState({ hasOldMessage: false });
+        return;
+      }
+      console.log();
+      dispatch(addAllOldMessage(result));
+    }
+
+    return (
+      !connected ? (
         <Offline locale={language} />
-    ) : showUpdateUI ? (
+      ) : showUpdateUI ? (
         <IosUpdateUI />
-    ) : (
-        <div
-            id="rw-messages"
-            style={{ backgroundColor: conversationBackgroundColor }}
-            className="rw-messages-container"
-        >
+      ) : (
+        <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container" ref={this.messagesRef} >
+          <InfiniteScroll
+            dataLength={messages.size}
+            next={handleFetchNewMessage()}
+            hasMore={this.state.hasMoreOldMessage}
+            inverse={true}
+            loader={<h4>Loading...</h4>}
+            scrollableTarget='rw-messages'
+          >
             {renderMessages()}
             {displayTypingIndication && (
-                <div className="rw-message rw-typing-indication rw-with-avatar">
-                    <img
-                        src={liveAgent ? agentAvatar : profileAvatar}
-                        className="rw-avatar"
-                        alt="profile"
-                    />
-                    <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
-                        <div id="wave">
-                            <span className="rw-dot" />
-                            <span className="rw-dot" />
-                            <span className="rw-dot" />
-                        </div>
-                    </div>
+              <div className="rw-message rw-typing-indication rw-with-avatar">
+                <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
+                <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                  <div id="wave">
+                    <span className="rw-dot" />
+                    <span className="rw-dot" />
+                    <span className="rw-dot" />
+                  </div>
                 </div>
+              </div>
             )}
-        </div>
+          </InfiniteScroll>
+        </div>)
     );
   }
 }
@@ -192,6 +219,8 @@ Messages.propTypes = {
   messages: ImmutablePropTypes.listOf(ImmutablePropTypes.map),
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  sessionId: PropTypes.string,
+  oldMessageURL: PropTypes.string,
   liveAgent: PropTypes.bool,
   connected: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),

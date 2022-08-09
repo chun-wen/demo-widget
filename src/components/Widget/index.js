@@ -9,6 +9,7 @@ import {
   closeChat,
   showChat,
   addUserMessage,
+  getMessageFromServer,
   emitUserMessage,
   addResponseMessage,
   addCarousel,
@@ -116,6 +117,9 @@ class Widget extends Component {
     // Get the local session, check if there is an existing session_id
     const localSession = getLocalSession(storage, SESSION_NAME);
     const localId = localSession ? localSession.session_id : null;
+    console.log('storage:', storage);
+    console.log('localSession:', localSession);
+    console.log('localId:', localId);
     return localId;
   }
 
@@ -149,6 +153,11 @@ class Widget extends Component {
     } else {
       emit();
     }
+  }
+
+  getMessageFromServer(text) {
+    const { dispatch } = this.props;
+    dispatch(getMessageFromServer(text));
   }
 
   handleMessageReceived(messageWithMetadata) {
@@ -329,9 +338,9 @@ class Widget extends Component {
 
             const ElemIsInViewPort = (
               rectangle.top >= 0 &&
-                rectangle.left >= 0 &&
-                rectangle.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rectangle.right <= (window.innerWidth || document.documentElement.clientWidth)
+              rectangle.left >= 0 &&
+              rectangle.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+              rectangle.right <= (window.innerWidth || document.documentElement.clientWidth)
             );
             if (!ElemIsInViewPort) {
               elements[0].scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
@@ -596,9 +605,11 @@ class Widget extends Component {
         customData={this.props.customData}
         profileAvatar={this.props.profileAvatar}
         agentAvatar={this.props.agentAvatar}
+        oldMessageURL={this.props.oldMessageURL}
         liveAgent={this.props.liveAgent}
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
+        sessionId={this.getSessionId()}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -642,8 +653,12 @@ Widget.propTypes = {
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
   liveAgent: PropTypes.bool,
+<<<<<<< HEAD
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
+=======
+  oldMessageURL: PropTypes.string,
+>>>>>>> 9b4f473 (feat: integrate with get history messages api)
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,

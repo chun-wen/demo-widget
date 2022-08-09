@@ -29,6 +29,8 @@ const Conversation = props =>
       connected={props.connected}
       language={props.language}
       showUpdateUI={props.showUpdateUI}
+      sessionId={props.sessionId}
+      oldMessageURL={props.oldMessageURL}
     />
     <Sender
       sendMessage={props.sendMessage}
@@ -44,6 +46,8 @@ Conversation.propTypes = {
   sendMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  oldMessageURL: PropTypes.string,
+  sessionId: PropTypes.string,
   liveAgent: PropTypes.bool,
   toggleFullScreen: PropTypes.func,
   fullScreenMode: PropTypes.bool,

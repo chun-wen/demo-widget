@@ -85,7 +85,7 @@ export function toggleInputDisabled(disable) {
   };
 }
 
-export function addAllOldMessage(textArray, nextMessageIsTooltip = false, hidden = false) {
+export function addAllOldMessage(textArray=[], nextMessageIsTooltip = false, hidden = false) {
   return {
     type: actions.ADD_ALL_OLD_MESSAGE,
     text: textArray,

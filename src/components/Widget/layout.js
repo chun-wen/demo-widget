@@ -31,6 +31,8 @@ const WidgetLayout = (props) => {
           agentAvatar={props.agentAvatar}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
+          oldMessageURL={props.oldMessageURL}
+          sessionId={props.sessionId}
           toggleChat={props.toggleChat}
           isChatOpen={props.isChatOpen}
           toggleFullScreen={props.toggleFullScreen}
@@ -82,8 +84,13 @@ WidgetLayout.propTypes = {
   isChatVisible: PropTypes.bool,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+<<<<<<< HEAD
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
+=======
+  oldMessageURL: PropTypes.string,
+  sessionId: PropTypes.string,
+>>>>>>> 9b4f473 (feat: integrate with get history messages api)
   liveAgent: PropTypes.bool,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
