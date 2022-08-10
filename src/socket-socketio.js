@@ -1,7 +1,7 @@
 import io from 'socket.io-client';
 
 export default function (socketUrl, customData, path) {
-  const options = { transports: ['websocket'], closeOnBeforeunload: false, autoConnect: true };
+  const options = { transports: ['websocket'], closeOnBeforeunload: false, autoConnect: true, autoUnref:false };
 
   const socket = io(socketUrl, options);
   socket.on('connect', () => {
