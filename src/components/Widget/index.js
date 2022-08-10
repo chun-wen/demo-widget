@@ -51,6 +51,9 @@ class Widget extends Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.getSessionId = this.getSessionId.bind(this);
     this.intervalId = null;
+    this.state = {
+      remoteId: null
+    }
     this.eventListenerCleaner = () => { };
   }
 
@@ -396,10 +399,12 @@ class Widget extends Component {
         const remoteId = (sessionObject && sessionObject.session_id)
           ? sessionObject.session_id
           : sessionObject;
-
         // eslint-disable-next-line no-console
         // console.log(`session_confirm:${socket.socket.id} session_id:${remoteId}`);
         // Store the initial state to both the redux store and the storage, set connected to true
+        this.setState({
+          remoteId
+        })
         dispatch(connectServer());
         /*
         Check if the session_id is consistent with the server
@@ -609,7 +614,7 @@ class Widget extends Component {
         liveAgent={this.props.liveAgent}
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
-        sessionId={this.getSessionId()}
+        sessionId={this.state.remoteId}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -653,12 +658,9 @@ Widget.propTypes = {
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
   liveAgent: PropTypes.bool,
-<<<<<<< HEAD
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-=======
   oldMessageURL: PropTypes.string,
->>>>>>> 9b4f473 (feat: integrate with get history messages api)
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,

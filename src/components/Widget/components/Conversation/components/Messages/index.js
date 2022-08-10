@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { connect } from 'react-redux';
+import { throttle, debounce } from 'lodash'
 
 import { MESSAGES_TYPES } from 'constants';
 import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from 'messagesComponents';
@@ -33,6 +34,7 @@ const scrollToBottom = () => {
   }
 };
 
+
 const isAgentResponse = (message) => {
   const prefix = 'agent:';
   if (typeof message === 'object') return false;
@@ -53,6 +55,8 @@ class Messages extends Component {
   componentDidUpdate() {
     scrollToBottom();
   }
+
+
 
   getComponentToRender = (message, index, isLast) => {
     const { params } = this.props;
@@ -107,7 +111,47 @@ class Messages extends Component {
       sessionId,
       dispatch
     } = this.props;
-
+    console.log(this.props);
+    const { } = this.state
+    const handleScroll = debounce(
+      async (e) => {
+        // test
+        if (messages.size > 2) {
+          console.log(messages);
+          const earliestTimeStamp = messages.get(messages.size - 1).get('timestamp')
+          console.log(earliestTimeStamp);
+          console.log(this.messagesRef)
+          if (this.messagesRef.current.scrollTop === 0) {
+            const result = fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+            if (result === []) {
+              this.setState({
+                hasMoreOldMessage: false
+              })
+            }
+            dispatch(addAllOldMessage(result))
+            console.log(`result.events:${result}`);
+            console.log(`result.events:${result}`);
+          }
+        }
+        // if(!this.state.hasMoreOldMessage) return
+        // if(messages.size > 1){
+        //   console.log(messages);
+        //   const earliestTimeStamp = messages.get(1).get('timestamp')
+        //   console.log(earliestTimeStamp);
+        //   console.log(this.messagesRef)
+        //   if(this.messagesRef.current.scrollTop === 0){
+        // const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+        // if(result.events === []){
+        //   this.setState({
+        //     hasMoreOldMessage: false
+        //   })
+        // }
+        // dispatch(addAllOldMessage(result.events))
+        // console.log(`result.events:${result.events}`);
+        //   }
+        // }
+      }
+    )
     const renderMessages = () => {
       const {
         messages,
@@ -118,6 +162,8 @@ class Messages extends Component {
 
       const groups = [];
       let group = null;
+
+
 
       const dateRenderer = typeof showMessageDate === 'function' ? showMessageDate :
         showMessageDate === true ? formatDate : null;
@@ -188,28 +234,19 @@ class Messages extends Component {
         <IosUpdateUI />
       ) : (
         <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container" ref={this.messagesRef} >
-          <InfiniteScroll
-            dataLength={messages.size}
-            next={handleFetchNewMessage()}
-            hasMore={this.state.hasMoreOldMessage}
-            inverse={true}
-            loader={<h4>Loading...</h4>}
-            scrollableTarget='rw-messages'
-          >
-            {renderMessages()}
-            {displayTypingIndication && (
-              <div className="rw-message rw-typing-indication rw-with-avatar">
-                <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
-                <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
-                  <div id="wave">
-                    <span className="rw-dot" />
-                    <span className="rw-dot" />
-                    <span className="rw-dot" />
-                  </div>
+          {renderMessages()}
+          {displayTypingIndication && (
+            <div className="rw-message rw-typing-indication rw-with-avatar">
+              <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
+              <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                <div id="wave">
+                  <span className="rw-dot" />
+                  <span className="rw-dot" />
+                  <span className="rw-dot" />
                 </div>
               </div>
-            )}
-          </InfiniteScroll>
+            </div>
+          )}
         </div>)
     );
   }
