@@ -29,6 +29,8 @@ const WidgetLayout = (props) => {
           sendMessage={props.onSendMessage}
           profileAvatar={props.profileAvatar}
           agentAvatar={props.agentAvatar}
+          language={props.language}
+          showUpdateUI={props.showUpdateUI}
           toggleChat={props.toggleChat}
           isChatOpen={props.isChatOpen}
           toggleFullScreen={props.toggleFullScreen}
@@ -80,6 +82,8 @@ WidgetLayout.propTypes = {
   isChatVisible: PropTypes.bool,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  language: PropTypes.oneOf(['zh', 'en']),
+  showUpdateUI: PropTypes.bool,
   liveAgent: PropTypes.bool,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,

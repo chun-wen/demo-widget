@@ -597,6 +597,8 @@ class Widget extends Component {
         profileAvatar={this.props.profileAvatar}
         agentAvatar={this.props.agentAvatar}
         liveAgent={this.props.liveAgent}
+        language={this.props.language}
+        showUpdateUI={this.props.showUpdateUI}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -640,6 +642,8 @@ Widget.propTypes = {
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
   liveAgent: PropTypes.bool,
+  language: PropTypes.oneOf(['zh', 'en']),
+  showUpdateUI: PropTypes.bool,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,
