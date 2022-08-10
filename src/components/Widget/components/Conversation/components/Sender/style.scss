@@ -9,7 +9,7 @@
     background-color: $grey-2;
     min-height: 30px;
     padding: 15px 5px;
-   
+    z-index: 9999;
   }
   
   .#{$namespace}new-message {
@@ -54,5 +54,8 @@
   .#{$namespace}sender {
     flex: 0, 0, auto;
     min-height: 35px;
+    &-hidden {
+        display: none;
+    }
   }
 }
