@@ -1,9 +1,17 @@
 import io from 'socket.io-client';
 
 export default function (socketUrl, customData, path) {
-  const options = { transports: ['websocket'], closeOnBeforeunload: false, autoConnect: true, autoUnref:false };
+  const options = {
+      transports: ['websocket'],
+      closeOnBeforeunload: false,
+      autoConnect: true,
+      autoUnref: false,
+      forceNew: false,
+ };
 
   const socket = io(socketUrl, options);
+  const listeners = socket.listenersAnyOutgoing();
+  console.log(`listeners : ${listeners}`);
   socket.on('connect', () => {
     // console.log(`connect:${socket.id}`);
     socket.customData = customData;
@@ -15,6 +23,14 @@ export default function (socketUrl, customData, path) {
 
   socket.on('disconnect', (reason) => {
     console.log(reason);
+  });
+
+  socket.on('ping', (ping) => {
+      console.log(`sorry I am ping ${ping}`);
+  });
+
+  socket.prependAnyOutgoing(event => {
+      console.log(`got ${event}`);
   });
 
   return socket;
