@@ -16,8 +16,6 @@ const Conversation = props =>
       fullScreenMode={props.fullScreenMode}
       showCloseButton={props.showCloseButton}
       showFullScreenButton={props.showFullScreenButton}
-      connected={props.connected}
-      connectingText={props.connectingText}
       closeImage={props.closeImage}
       profileAvatar={props.profileAvatar}
     />
@@ -28,11 +26,15 @@ const Conversation = props =>
       showMessageDate={props.showMessageDate}
       agentAvatar={props.agentAvatar}
       liveAgent={props.liveAgent}
+      connected={props.connected}
+      language={props.language}
+      showUpdateUI={props.showUpdateUI}
     />
     <Sender
       sendMessage={props.sendMessage}
       disabledInput={props.disabledInput}
       inputTextFieldHint={props.inputTextFieldHint}
+      connected={props.connected}
     />
   </div>;
 

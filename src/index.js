@@ -132,6 +132,8 @@ const ConnectedWidget = forwardRef((props, ref) => {
           handleNewUserMessage={props.handleNewUserMessage}
           profileAvatar={props.profileAvatar}
           agentAvatar={props.agentAvatar}
+          language={props.language}
+          showUpdateUI={props.showUpdateUI}
           showCloseButton={props.showCloseButton}
           showFullScreenButton={props.showFullScreenButton}
           hideWhenNotConnected={props.hideWhenNotConnected}

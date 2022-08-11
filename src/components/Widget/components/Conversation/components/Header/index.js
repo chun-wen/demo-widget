@@ -15,8 +15,6 @@ const Header = ({
   toggleChat,
   showCloseButton,
   showFullScreenButton,
-  connected,
-  connectingText,
   closeImage,
   profileAvatar
 }) => {
@@ -65,8 +63,6 @@ Header.propTypes = {
   toggleChat: PropTypes.func,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
-  connected: PropTypes.bool,
-  connectingText: PropTypes.string,
   closeImage: PropTypes.string,
   profileAvatar: PropTypes.string
 };
