@@ -11,8 +11,8 @@ export default function (socketUrl, customData, path) {
   };
 
   const socket = io(socketUrl, options);
-  const listeners = socket.listenersAnyOutgoing();
-  console.log(`listeners : ${listeners}`);
+  // const listeners = socket.listenersAnyOutgoing();
+
   socket.on('connect', () => {
     // console.log(`connect:${socket.id}`);
     socket.customData = customData;
@@ -28,10 +28,6 @@ export default function (socketUrl, customData, path) {
 
   socket.on('ping', (ping) => {
       console.log(`sorry I am ping ${ping}`);
-  });
-
-  socket.prependAnyOutgoing(event => {
-      console.log(`got ${event}`);
   });
 
   return socket;
