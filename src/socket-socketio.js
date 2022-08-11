@@ -7,7 +7,8 @@ export default function (socketUrl, customData, path) {
       autoConnect: true,
       autoUnref: false,
       forceNew: false,
- };
+      timeout: 86400000, // set timeout to 24hr
+  };
 
   const socket = io(socketUrl, options);
   const listeners = socket.listenersAnyOutgoing();
