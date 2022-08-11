@@ -109,6 +109,8 @@ export const rasaWebchatProTypes = {
   handleNewUserMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  language: PropTypes.oneOf(['zh', 'en']),
+  showUpdateUI: PropTypes.bool,
   inputTextFieldHint: PropTypes.string,
   connectingText: PropTypes.string,
   showCloseButton: PropTypes.bool,

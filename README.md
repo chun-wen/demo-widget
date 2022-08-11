@@ -1,3 +1,8 @@
+- v1.1.29
+- Fix firefox enter event issue.
+- Add websocket parameter to test.
+- Add offline UI
+
 - v1.1.28
 - Remove sessionID console.
 - Revert 1.1.27 commit.
@@ -7,6 +12,12 @@
 
 - v1.1.26
 1. Upgrade socket-io client to 4 to test websocket Android external link issue.
+
+- v1.1.25
+1. Add Github repo link.
+
+- v1.1.24
+1. Test Android webSocket
 
 - v1.1.23
 1. Parse URL and Image.

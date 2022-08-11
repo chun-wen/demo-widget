@@ -4,7 +4,7 @@ import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
 
 import { MESSAGES_TYPES } from 'constants';
-import { Video, Image, Message, Carousel, Buttons } from 'messagesComponents';
+import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from 'messagesComponents';
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
@@ -83,12 +83,20 @@ class Messages extends Component {
   }
 
   render() {
-    const { displayTypingIndication, profileAvatar, agentAvatar, liveAgent } = this.props;
+    const {
+        displayTypingIndication,
+        profileAvatar,
+        agentAvatar,
+        liveAgent,
+        connected,
+        language,
+        showUpdateUI,
+    } = this.props;
 
     const renderMessages = () => {
       const {
         messages,
-        showMessageDate
+        showMessageDate,
       } = this.props;
 
       if (messages.isEmpty()) return null;
@@ -148,22 +156,34 @@ class Messages extends Component {
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
 
-    return (
-      <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container">
-        {renderMessages()}
-        {displayTypingIndication && (
-          <div className="rw-message rw-typing-indication rw-with-avatar">
-            <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
-            <div style={{ backgroundColor: assistBackgoundColor }}className="rw-response">
-              <div id="wave">
-                <span className="rw-dot" />
-                <span className="rw-dot" />
-                <span className="rw-dot" />
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+    return !connected ? (
+        <Offline locale={language} />
+    ) : showUpdateUI ? (
+        <IosUpdateUI />
+    ) : (
+        <div
+            id="rw-messages"
+            style={{ backgroundColor: conversationBackgroundColor }}
+            className="rw-messages-container"
+        >
+            {renderMessages()}
+            {displayTypingIndication && (
+                <div className="rw-message rw-typing-indication rw-with-avatar">
+                    <img
+                        src={liveAgent ? agentAvatar : profileAvatar}
+                        className="rw-avatar"
+                        alt="profile"
+                    />
+                    <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                        <div id="wave">
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
     );
   }
 }
@@ -173,6 +193,9 @@ Messages.propTypes = {
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
   liveAgent: PropTypes.bool,
+  connected: PropTypes.bool,
+  language: PropTypes.oneOf(['zh', 'en']),
+  showUpdateUI: PropTypes.bool,
   customComponent: PropTypes.func,
   showMessageDate: PropTypes.oneOfType([PropTypes.bool, PropTypes.func]),
   displayTypingIndication: PropTypes.bool
