@@ -1,11 +1,15 @@
+- v1.1.30
+1. Fix Socket-io client error 
+2. Adjust websocket default timeout 
+
 - v1.1.29
-- Fix firefox enter event issue.
-- Add websocket parameter to test.
-- Add offline UI
+1. Fix firefox enter event issue.
+2. Add websocket parameter to test.
+3. Add offline UI
 
 - v1.1.28
-- Remove sessionID console.
-- Revert 1.1.27 commit.
+1. Remove sessionID console.
+2. Revert 1.1.27 commit.
 
 - v1.1.27
 1. Update package-lock.json
