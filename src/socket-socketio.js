@@ -11,7 +11,6 @@ export default function (socketUrl, customData, path) {
   };
 
   const socket = io(socketUrl, options);
-  // const listeners = socket.listenersAnyOutgoing();
 
   socket.on('connect', () => {
     // console.log(`connect:${socket.id}`);
@@ -24,10 +23,6 @@ export default function (socketUrl, customData, path) {
 
   socket.on('disconnect', (reason) => {
     console.log(reason);
-  });
-
-  socket.on('ping', (ping) => {
-      console.log(`sorry I am ping ${ping}`);
   });
 
   return socket;
