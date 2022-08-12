@@ -16,7 +16,7 @@ export function createNewMessage(text, sender, nextMessageIsTooltip, hidden) {
 }
 
 export function getMessageFromServer(text, sender, timestamp, nextMessageIsTooltip, hidden) {
-  if(text?.data?.attachment){
+  if (text?.data?.attachment) {
     return Map({
       type: MESSAGES_TYPES.CAROUSEL,
       component: Carousel,
@@ -28,7 +28,7 @@ export function getMessageFromServer(text, sender, timestamp, nextMessageIsToolt
   return Map({
     type: MESSAGES_TYPES.TEXT,
     component: Message,
-    text:text.text,
+    text: text.text,
     sender,
     showAvatar: sender === MESSAGE_SENDER.RESPONSE,
     timestamp,
@@ -87,8 +87,6 @@ export function createButtons(buttons, sender) {
 }
 
 export function createComponentMessage(component, props, showAvatar) {
-  console.log(`createComponentMessage:${JSON.stringify(component)}`);
-
   return Map({
     type: MESSAGES_TYPES.CUSTOM_COMPONENT,
     component,

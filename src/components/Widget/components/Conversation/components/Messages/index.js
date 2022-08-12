@@ -82,12 +82,7 @@ class Messages extends Component {
     if (messages.size < 1) return
     const earliestTimeStamp = messages.get(1).get('timestamp')
     const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
-    if (!result) {
-      return this.setState({
-        hasMoreOldMessage: false
-      });
-    }
-    if (!isEarlierExisted(result.events)) {
+    if (!isEarlierExisted(result.events) || !result) {
       return this.setState({
         hasMoreOldMessage: false
       });
