@@ -120,9 +120,6 @@ class Widget extends Component {
     // Get the local session, check if there is an existing session_id
     const localSession = getLocalSession(storage, SESSION_NAME);
     const localId = localSession ? localSession.session_id : null;
-    console.log('storage:', storage);
-    console.log('localSession:', localSession);
-    console.log('localId:', localId);
     return localId;
   }
 

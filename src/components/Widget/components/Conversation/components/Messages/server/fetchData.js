@@ -10,15 +10,16 @@ const clientToken = (sessionId) => jwt.sign(
 );
 
 export default async (url, sessionId, earliestTimeStamp) => {
-    const requestURL = `${url}/${sessionId}/retrieve_historical_conversations?output_channel=socketChannel.SocketIOInput&message_count=100&earliest_message_time=${earliestTimeStamp/1000}`
+    const requestURL = `${url}/${sessionId}/retrieve_historical_conversations?output_channel=socketChannel.SocketIOInput&message_count=30&earliest_message_time=${earliestTimeStamp/1000}`
     const token = clientToken(sessionId);
     const result = await window.fetch(requestURL, { 
         method: 'post', 
         headers: new Headers({
+            Accept: 'application/json',
             Authorization:`Bearer ${token}`
         })
     })
-    console.log(`I'm result ${JSON.stringify(result)}`);
-    const { events } = result
-    return events
+    const resultJSON = await result.json();
+    console.log(JSON.stringify(resultJSON));
+    return resultJSON;
 }

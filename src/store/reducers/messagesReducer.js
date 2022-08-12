@@ -41,8 +41,7 @@ export default function (storage) {
         return storeMessage(state.push(createNewMessage(action.text, MESSAGE_SENDER.RESPONSE)));
       }
       case actionTypes.ADD_ALL_OLD_MESSAGE: {
-        console.log(action.text);
-        return storeMessage(state.shift(action.text.map(({ text, event, timestamp }) => getMessageFromServer(text, event=== 'user' ? MESSAGE_SENDER.CLIENT : MESSAGE_SENDER.RESPONSE, timestamp))));
+        return storeMessage(state.unshift(...action.text.map(({ text, event, timestamp, data }) => getMessageFromServer({text, data}, event=== 'user' ? MESSAGE_SENDER.CLIENT : MESSAGE_SENDER.RESPONSE, timestamp*1000))));
       }
       case actionTypes.ADD_CAROUSEL: {
         return storeMessage(state.push(createCarousel(action.carousel, MESSAGE_SENDER.RESPONSE)));

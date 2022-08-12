@@ -117,20 +117,16 @@ class Messages extends Component {
       async (e) => {
         // test
         if (messages.size > 2) {
-          console.log(messages);
           const earliestTimeStamp = messages.get(messages.size - 1).get('timestamp')
-          console.log(earliestTimeStamp);
-          console.log(this.messagesRef)
           if (this.messagesRef.current.scrollTop === 0) {
-            const result = fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+            const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
             if (result === []) {
               this.setState({
                 hasMoreOldMessage: false
               })
             }
-            dispatch(addAllOldMessage(result))
-            console.log(`result.events:${result}`);
-            console.log(`result.events:${result}`);
+
+            dispatch(addAllOldMessage(result.events))
           }
         }
         // if(!this.state.hasMoreOldMessage) return
