@@ -25,6 +25,10 @@ export function addUserMessage(text) {
   store.dispatch(actions.addUserMessage(text));
 }
 
+export function addAllOldMessage(text) {
+  store.dispatch(actions.addAllOldMessage(text));
+}
+
 export function emitUserMessage(text) {
   store.dispatch(actions.emitUserMessage(text));
 }

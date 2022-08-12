@@ -4,6 +4,7 @@ import { MESSAGE_SENDER, SESSION_NAME } from 'constants';
 import {
   createButtons,
   createNewMessage,
+  getMessageFromServer,
   createCarousel,
   createVideoSnippet,
   createImageSnippet,
@@ -38,6 +39,9 @@ export default function (storage) {
       }
       case actionTypes.ADD_NEW_RESPONSE_MESSAGE: {
         return storeMessage(state.push(createNewMessage(action.text, MESSAGE_SENDER.RESPONSE)));
+      }
+      case actionTypes.ADD_ALL_OLD_MESSAGE: {
+        return storeMessage(state.unshift(...action.text.map(({ text, event, timestamp, data }) => getMessageFromServer({text, data}, event=== 'user' ? MESSAGE_SENDER.CLIENT : MESSAGE_SENDER.RESPONSE, timestamp*1000))));
       }
       case actionTypes.ADD_CAROUSEL: {
         return storeMessage(state.push(createCarousel(action.carousel, MESSAGE_SENDER.RESPONSE)));

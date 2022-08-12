@@ -116,12 +116,14 @@ const ConnectedWidget = forwardRef((props, ref) => {
   return (
     <Provider store={store.current}>
       <ThemeContext.Provider
-        value={{ mainColor: props.mainColor,
+        value={{
+          mainColor: props.mainColor,
           conversationBackgroundColor: props.conversationBackgroundColor,
           userTextColor: props.userTextColor,
           userBackgroundColor: props.userBackgroundColor,
           assistTextColor: props.assistTextColor,
-          assistBackgoundColor: props.assistBackgoundColor }}
+          assistBackgoundColor: props.assistBackgoundColor
+        }}
       >
         <Widget
           ref={ref}
@@ -134,6 +136,8 @@ const ConnectedWidget = forwardRef((props, ref) => {
           agentAvatar={props.agentAvatar}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
+          isSameUser={props.isSameUser}
+          oldMessageURL={props.oldMessageURL}
           showCloseButton={props.showCloseButton}
           showFullScreenButton={props.showFullScreenButton}
           hideWhenNotConnected={props.hideWhenNotConnected}
@@ -176,6 +180,8 @@ ConnectedWidget.propTypes = {
   handleNewUserMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  isSameUser: PropTypes.bool,
+  oldMessageURL: PropTypes.string,
   inputTextFieldHint: PropTypes.string,
   connectingText: PropTypes.string,
   showCloseButton: PropTypes.bool,
@@ -218,6 +224,7 @@ ConnectedWidget.propTypes = {
 ConnectedWidget.defaultProps = {
   title: 'Welcome',
   customData: {},
+  isSameUser: false,
   inputTextFieldHint: 'Type a message...',
   connectingText: 'Waiting for server...',
   fullScreenMode: false,
@@ -247,10 +254,10 @@ ConnectedWidget.defaultProps = {
   tooltipPayload: null,
   tooltipDelay: 500,
   onWidgetEvent: {
-    onChatOpen: () => {},
-    onChatClose: () => {},
-    onChatVisible: () => {},
-    onChatHidden: () => {}
+    onChatOpen: () => { },
+    onChatClose: () => { },
+    onChatVisible: () => { },
+    onChatHidden: () => { }
   },
   disableTooltips: false,
   mainColor: '',

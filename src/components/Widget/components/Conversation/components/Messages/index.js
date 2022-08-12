@@ -2,12 +2,16 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import ImmutablePropTypes from 'react-immutable-proptypes';
 import { connect } from 'react-redux';
+import { debounce } from 'lodash'
 
 import { MESSAGES_TYPES } from 'constants';
 import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from 'messagesComponents';
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
+
+import { addAllOldMessage } from "actions";
+import fetchOldMessage from "./server/fetchData";
 
 const isToday = (date) => {
   const today = new Date();
@@ -29,18 +33,64 @@ const scrollToBottom = () => {
   }
 };
 
+const scrollToTop = () => {
+  const messagesDiv = document.getElementById('rw-messages');
+  if (messagesDiv) {
+    messagesDiv.scrollTop = 1;
+  }
+};
+
+const isEarlierExisted = (response) => response !== []
+
 const isAgentResponse = (message) => {
   const prefix = 'agent:';
   if (typeof message === 'object') return false;
   return message ? message.startsWith(prefix) : false;
 };
 class Messages extends Component {
+  constructor() {
+    super();
+    this.state = {
+      hasMoreOldMessage: true,
+      isFetchedEnd: false,
+    }
+    this.messagesRef = React.createRef(null)
+  }
   componentDidMount() {
+    const { isSameUser } = this.props
+    if (isSameUser) {
+      this.requestMessages();
+      return scrollToTop();
+    }
     scrollToBottom();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    // do not scroll while there's no message
+    if (prevProps.messages.size === this.props.messages.size) return;
+    if (this.state.isFetchedEnd) {
+      scrollToTop()
+      return this.setState({
+        isFetchedEnd: false,
+      })
+    }
     scrollToBottom();
+  }
+
+  async requestMessages() {
+    const { messages, oldMessageURL, sessionId, dispatch } = this.props;
+    if (messages.size < 1) return
+    const earliestTimeStamp = messages.get(1).get('timestamp')
+    const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+    if (!isEarlierExisted(result.events) || !result) {
+      return this.setState({
+        hasMoreOldMessage: false
+      });
+    }
+    dispatch(addAllOldMessage(result.events))
+    this.setState({
+      isFetchedEnd: true
+    })
   }
 
   getComponentToRender = (message, index, isLast) => {
@@ -83,16 +133,24 @@ class Messages extends Component {
   }
 
   render() {
-    const {
-        displayTypingIndication,
-        profileAvatar,
-        agentAvatar,
-        liveAgent,
-        connected,
-        language,
-        showUpdateUI,
-    } = this.props;
-
+    const { displayTypingIndication,
+      profileAvatar,
+      agentAvatar,
+      liveAgent,
+      connected,
+      language,
+      showUpdateUI,
+      messages,
+      isSameUser } = this.props;
+    const handleScroll = debounce(
+      () => {
+        if (!this.state.hasMoreOldMessage || !isSameUser) return
+        if (messages.size < 2) return
+        if (this.messagesRef.current.scrollTop === 0) {
+          this.requestMessages()
+        }
+      }
+    )
     const renderMessages = () => {
       const {
         messages,
@@ -103,6 +161,8 @@ class Messages extends Component {
 
       const groups = [];
       let group = null;
+
+
 
       const dateRenderer = typeof showMessageDate === 'function' ? showMessageDate :
         showMessageDate === true ? formatDate : null;
@@ -156,34 +216,27 @@ class Messages extends Component {
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
 
-    return !connected ? (
+    return (
+      !connected ? (
         <Offline locale={language} />
-    ) : showUpdateUI ? (
+      ) : showUpdateUI ? (
         <IosUpdateUI />
-    ) : (
-        <div
-            id="rw-messages"
-            style={{ backgroundColor: conversationBackgroundColor }}
-            className="rw-messages-container"
-        >
-            {renderMessages()}
-            {displayTypingIndication && (
-                <div className="rw-message rw-typing-indication rw-with-avatar">
-                    <img
-                        src={liveAgent ? agentAvatar : profileAvatar}
-                        className="rw-avatar"
-                        alt="profile"
-                    />
-                    <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
-                        <div id="wave">
-                            <span className="rw-dot" />
-                            <span className="rw-dot" />
-                            <span className="rw-dot" />
-                        </div>
-                    </div>
+      ) : (
+        <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container" ref={this.messagesRef} onScroll={(e) => handleScroll(e)} >
+          {renderMessages()}
+          {displayTypingIndication && (
+            <div className="rw-message rw-typing-indication rw-with-avatar">
+              <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
+              <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                <div id="wave">
+                  <span className="rw-dot" />
+                  <span className="rw-dot" />
+                  <span className="rw-dot" />
                 </div>
-            )}
-        </div>
+              </div>
+            </div>
+          )}
+        </div>)
     );
   }
 }
@@ -192,6 +245,9 @@ Messages.propTypes = {
   messages: ImmutablePropTypes.listOf(ImmutablePropTypes.map),
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  sessionId: PropTypes.string,
+  oldMessageURL: PropTypes.string,
+  isSameUser: PropTypes.bool,
   liveAgent: PropTypes.bool,
   connected: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
@@ -202,7 +258,9 @@ Messages.propTypes = {
 };
 
 Message.defaultTypes = {
-  displayTypingIndication: false
+  displayTypingIndication: false,
+  isSameUser: false,
+  liveAgent: false,
 };
 
 export default connect(store => ({

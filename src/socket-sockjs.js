@@ -39,7 +39,7 @@ export default function (socketUrl, customData, _path, options) {
 
     send({
       type: 'SESSION_REQUEST',
-      content: JSON.stringify({authData, ...customData}),
+      content: JSON.stringify({ authData, ...customData }),
       sender: 'client'
     });
   });
@@ -62,8 +62,8 @@ export default function (socketUrl, customData, _path, options) {
   };
 
   const emitBotUtteredMessage = (message) => {
-      delete message.recipient_id;
-      socketProxy.emit('bot_uttered', message);
+    delete message.recipient_id;
+    socketProxy.emit('bot_uttered', message);
   }
 
   socketProxy.onIncomingMessage = (payload) => {
@@ -76,7 +76,7 @@ export default function (socketUrl, customData, _path, options) {
       socketProxy.emit('disconnect', message.content || 'server left');
     } else if (message.type === 'SESSION_CONFIRM') {
       const props = JSON.parse(message.content)
-      socketProxy.emit('session_confirm', {session_id: socketProxy.id, ...props});
+      socketProxy.emit('session_confirm', { session_id: socketProxy.id, ...props });
     } else if (message.type === 'CHAT') {
       const agentMessage = JSON.parse(message.content);
       if (agentMessage instanceof Array) {

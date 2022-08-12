@@ -1,6 +1,5 @@
 import { Map, fromJS } from 'immutable';
 import { MESSAGES_TYPES, MESSAGE_SENDER, SESSION_NAME } from 'constants';
-
 import { Video, Image, Message, Carousel, Buttons } from 'messagesComponents';
 
 export function createNewMessage(text, sender, nextMessageIsTooltip, hidden) {
@@ -14,6 +13,28 @@ export function createNewMessage(text, sender, nextMessageIsTooltip, hidden) {
     nextMessageIsTooltip,
     hidden
   });
+}
+
+export function getMessageFromServer(text, sender, timestamp, nextMessageIsTooltip, hidden) {
+  if (text?.data?.attachment) {
+    return Map({
+      type: MESSAGES_TYPES.CAROUSEL,
+      component: Carousel,
+      sender,
+      elements: fromJS(text?.data?.attachment.payload.elements),
+      timestamp
+    });
+  }
+  return Map({
+    type: MESSAGES_TYPES.TEXT,
+    component: Message,
+    text: text.text,
+    sender,
+    showAvatar: sender === MESSAGE_SENDER.RESPONSE,
+    timestamp,
+    nextMessageIsTooltip,
+    hidden
+  })
 }
 
 export function createCarousel(carousel, sender) {

@@ -9,6 +9,7 @@ import {
   closeChat,
   showChat,
   addUserMessage,
+  getMessageFromServer,
   emitUserMessage,
   addResponseMessage,
   addCarousel,
@@ -50,6 +51,9 @@ class Widget extends Component {
     this.sendMessage = this.sendMessage.bind(this);
     this.getSessionId = this.getSessionId.bind(this);
     this.intervalId = null;
+    this.state = {
+      remoteId: null
+    }
     this.eventListenerCleaner = () => { };
   }
 
@@ -149,6 +153,11 @@ class Widget extends Component {
     } else {
       emit();
     }
+  }
+
+  getMessageFromServer(text) {
+    const { dispatch } = this.props;
+    dispatch(getMessageFromServer(text));
   }
 
   handleMessageReceived(messageWithMetadata) {
@@ -329,9 +338,9 @@ class Widget extends Component {
 
             const ElemIsInViewPort = (
               rectangle.top >= 0 &&
-                rectangle.left >= 0 &&
-                rectangle.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rectangle.right <= (window.innerWidth || document.documentElement.clientWidth)
+              rectangle.left >= 0 &&
+              rectangle.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+              rectangle.right <= (window.innerWidth || document.documentElement.clientWidth)
             );
             if (!ElemIsInViewPort) {
               elements[0].scrollIntoView({ block: 'center', inline: 'nearest', behavior: 'smooth' });
@@ -387,10 +396,12 @@ class Widget extends Component {
         const remoteId = (sessionObject && sessionObject.session_id)
           ? sessionObject.session_id
           : sessionObject;
-
         // eslint-disable-next-line no-console
         // console.log(`session_confirm:${socket.socket.id} session_id:${remoteId}`);
         // Store the initial state to both the redux store and the storage, set connected to true
+        this.setState({
+          remoteId
+        })
         dispatch(connectServer());
         /*
         Check if the session_id is consistent with the server
@@ -467,7 +478,6 @@ class Widget extends Component {
       if (!sessionId) return;
 
       // eslint-disable-next-line no-console
-      console.log('sending init payload');
       // console.log('sending init payload', sessionId);
       socket.emit('user_uttered', { message: initPayload, customData, session_id: sessionId });
       dispatch(initialize());
@@ -596,9 +606,12 @@ class Widget extends Component {
         customData={this.props.customData}
         profileAvatar={this.props.profileAvatar}
         agentAvatar={this.props.agentAvatar}
+        oldMessageURL={this.props.oldMessageURL}
         liveAgent={this.props.liveAgent}
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
+        sessionId={this.state.remoteId}
+        isSameUser={this.props.isSameUser}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -644,6 +657,8 @@ Widget.propTypes = {
   liveAgent: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
+  isSameUser: PropTypes.bool,
+  oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,
@@ -685,6 +700,7 @@ Widget.defaultProps = {
   autoClearCache: false,
   displayUnreadCount: false,
   liveAgent: false,
+  isSameUser: false,
   tooltipPayload: null,
   inputTextFieldHint: 'Type a message...',
   oldUrl: '',

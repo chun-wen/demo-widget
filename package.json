@@ -1,12 +1,12 @@
 {
     "name": "@josh.chou/rasa-webchat",
-    "version": "1.1.30",
+    "version": "1.1.31",
     "description": "Chat web widget for React apps and Rasa Core chatbots",
     "module": "module/index.js",
     "main": "lib/index.js",
     "repository": {
-        "type":"git",
-        "url":"https://github.com/IT-FE-Josh/rasa-webchat.git"
+        "type": "git",
+        "url": "https://github.com/IT-FE-Josh/rasa-webchat.git"
     },
     "author": "",
     "license": "Apache-2.0",
@@ -29,6 +29,8 @@
         "html-webpack-plugin": "^3.2.0",
         "immutable": "^3.8.2",
         "js-cookie": "^3.0.1",
+        "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.21",
         "object-hash": "^1.1.5",
         "prop-types": "^15.7.2",
         "react-immutable-proptypes": "^2.2.0",
