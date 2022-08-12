@@ -65,7 +65,9 @@ class Messages extends Component {
     scrollToBottom();
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
+    // do not scroll while there's no message
+    if (prevProps.messages.size === this.props.messages.size) return;
     if (this.state.isFetchedEnd) {
       scrollToTop()
       return this.setState({
@@ -77,18 +79,23 @@ class Messages extends Component {
 
   async requestMessages() {
     const { messages, oldMessageURL, sessionId, dispatch } = this.props;
+    if (messages.size < 1) return
     const earliestTimeStamp = messages.get(1).get('timestamp')
     const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+    if (!result) {
+      return this.setState({
+        hasMoreOldMessage: false
+      });
+    }
+    if (!isEarlierExisted(result.events)) {
+      return this.setState({
+        hasMoreOldMessage: false
+      });
+    }
     dispatch(addAllOldMessage(result.events))
     this.setState({
       isFetchedEnd: true
     })
-    if (!isEarlierExisted(result.events)) {
-      this.setState({
-        hasMoreOldMessage: false
-      })
-    }
-    console.log(`result.events:${result.events}`);
   }
 
   getComponentToRender = (message, index, isLast) => {
@@ -139,13 +146,10 @@ class Messages extends Component {
       language,
       showUpdateUI,
       messages,
-      oldMessageURL,
-      sessionId,
-      dispatch,
       isSameUser } = this.props;
     const handleScroll = debounce(
       () => {
-        if (!this.state.hasMoreOldMessage) return
+        if (!this.state.hasMoreOldMessage || !isSameUser) return
         if (messages.size < 2) return
         if (this.messagesRef.current.scrollTop === 0) {
           this.requestMessages()

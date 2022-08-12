@@ -85,13 +85,10 @@ WidgetLayout.propTypes = {
   isChatVisible: PropTypes.bool,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
-<<<<<<< HEAD
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-=======
   oldMessageURL: PropTypes.string,
   sessionId: PropTypes.string,
->>>>>>> 9b4f473 (feat: integrate with get history messages api)
   liveAgent: PropTypes.bool,
   isSameUser: PropTypes.bool,
   showCloseButton: PropTypes.bool,
