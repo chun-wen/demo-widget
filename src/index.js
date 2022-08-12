@@ -136,6 +136,7 @@ const ConnectedWidget = forwardRef((props, ref) => {
           agentAvatar={props.agentAvatar}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
+          isSameUser={props.isSameUser}
           oldMessageURL={props.oldMessageURL}
           showCloseButton={props.showCloseButton}
           showFullScreenButton={props.showFullScreenButton}
@@ -179,6 +180,7 @@ ConnectedWidget.propTypes = {
   handleNewUserMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  isSameUser: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   inputTextFieldHint: PropTypes.string,
   connectingText: PropTypes.string,
@@ -222,6 +224,7 @@ ConnectedWidget.propTypes = {
 ConnectedWidget.defaultProps = {
   title: 'Welcome',
   customData: {},
+  isSameUser: false,
   inputTextFieldHint: 'Type a message...',
   connectingText: 'Waiting for server...',
   fullScreenMode: false,

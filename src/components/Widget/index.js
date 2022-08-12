@@ -612,6 +612,7 @@ class Widget extends Component {
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
         sessionId={this.state.remoteId}
+        isSameUser={this.props.isSameUser}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -657,6 +658,7 @@ Widget.propTypes = {
   liveAgent: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
+  isSameUser: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
@@ -699,6 +701,7 @@ Widget.defaultProps = {
   autoClearCache: false,
   displayUnreadCount: false,
   liveAgent: false,
+  isSameUser: false,
   tooltipPayload: null,
   inputTextFieldHint: 'Type a message...',
   oldUrl: '',

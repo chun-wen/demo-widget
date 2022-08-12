@@ -38,6 +38,7 @@ const WidgetLayout = (props) => {
           toggleFullScreen={props.toggleFullScreen}
           fullScreenMode={props.fullScreenMode}
           liveAgent={props.liveAgent}
+          isSameUser={props.isSameUser}
           disabledInput={props.disabledInput}
           params={props.params}
           showFullScreenButton={props.showFullScreenButton}
@@ -92,6 +93,7 @@ WidgetLayout.propTypes = {
   sessionId: PropTypes.string,
 >>>>>>> 9b4f473 (feat: integrate with get history messages api)
   liveAgent: PropTypes.bool,
+  isSameUser: PropTypes.bool,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,
