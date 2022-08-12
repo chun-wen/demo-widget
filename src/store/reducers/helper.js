@@ -17,7 +17,6 @@ export function createNewMessage(text, sender, nextMessageIsTooltip, hidden) {
 
 export function getMessageFromServer(text, sender, timestamp, nextMessageIsTooltip, hidden) {
   if(text?.data?.attachment){
-    console.log(`carousel from server: ${JSON.stringify(text)}`);
     return Map({
       type: MESSAGES_TYPES.CAROUSEL,
       component: Carousel,

@@ -20,6 +20,5 @@ export default async (url, sessionId, earliestTimeStamp) => {
         })
     })
     const resultJSON = await result.json();
-    console.log(JSON.stringify(resultJSON));
     return resultJSON;
 }

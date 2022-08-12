@@ -33,6 +33,13 @@ const scrollToBottom = () => {
   }
 };
 
+const scrollToTop = () => {
+  const messagesDiv = document.getElementById('rw-messages');
+  if (messagesDiv) {
+    messagesDiv.scrollTop = 1;
+  }
+};
+
 const isEarlierExisted = (response) => response !== []
 
 const isAgentResponse = (message) => {
@@ -51,12 +58,16 @@ class Messages extends Component {
   }
   componentDidMount() {
     const { isSameUser } = this.props
-    if (isSameUser) this.requestMessages()
+    if (isSameUser) {
+      this.requestMessages();
+      return scrollToTop();
+    }
     scrollToBottom();
   }
 
   componentDidUpdate() {
     if (this.state.isFetchedEnd) {
+      scrollToTop()
       return this.setState({
         isFetchedEnd: false,
       })
@@ -205,16 +216,6 @@ class Messages extends Component {
       ));
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
-
-    const handleFetchNewMessage = () => {
-      const result = fetchOldMessage(oldMessageURL, sessionId);
-      if (result === []) {
-        this.setState({ hasOldMessage: false });
-        return;
-      }
-      console.log();
-      dispatch(addAllOldMessage(result));
-    }
 
     return (
       !connected ? (
