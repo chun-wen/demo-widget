@@ -1,3 +1,6 @@
+- v1.1.31
+1. Add new infinite scroll feature.
+
 - v1.1.30
 1. Fix Socket-io client error 
 2. Adjust websocket default timeout 

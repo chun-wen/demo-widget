@@ -5,7 +5,7 @@ const clientToken = (sessionId) => jwt.sign(
     'ji3ul4xu656xk7',
     {
         algorithm: 'HS256',
-        expiresIn: '6000s',
+        expiresIn: '30s',
     },
 );
 
