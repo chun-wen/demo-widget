@@ -118,7 +118,7 @@ class Widget extends Component {
   getSessionId() {
     const { storage } = this.props;
     // Get the local session, check if there is an existing session_id
-    const localSession = getLocalSession(storage, SESSION_NAME);
+    const localSession = getLocalSession(storage, SESSION_NAME) || Cookies.get('_sessionID');
     const localId = localSession ? localSession.session_id : null;
     return localId;
   }
@@ -414,6 +414,7 @@ class Widget extends Component {
           // Store the received session_id to storage
 
           storeLocalSession(storage, SESSION_NAME, remoteId);
+          Cookies.set('_sessionID', remoteId);
           dispatch(pullSession());
           if (sendInitPayload) {
             this.trySendInitPayload();
