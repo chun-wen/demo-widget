@@ -1,3 +1,7 @@
+- v1.1.32
+1. Handle lost messages from agent and resend welcome messages.
+2. Session ID from Cookies.
+
 - v1.1.31
 1. Add new infinite scroll feature.
 
