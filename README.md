@@ -1,3 +1,8 @@
+- v1.1.33
+1. Retrieve history messages and resend welcome messages.
+2. Set _sessionID and _userID to cookies to tell is same user login.
+3. Update socket.io version to 4.5.1
+
 - v1.1.32
 1. Handle lost messages from agent and resend welcome messages.
 2. Session ID from Cookies.
