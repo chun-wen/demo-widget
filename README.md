@@ -1,3 +1,6 @@
+- v1.1.34
+1. Fix get undefined sessionID.
+
 - v1.1.33
 1. Retrieve history messages and resend welcome messages.
 2. Set _sessionID and _userID to cookies to tell is same user login.
