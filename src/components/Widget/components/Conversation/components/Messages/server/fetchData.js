@@ -10,7 +10,7 @@ const clientToken = (sessionId) => jwt.sign(
 );
 
 export const fetchOldMessage = async (url, sessionId, earliestTimeStamp) => {
-    const requestURL = `${url}/${sessionId}/retrieve_historical_conversations?output_channel=socketChannel.SocketIOInput&message_count=30&earliest_message_time=${earliestTimeStamp / 1000}`
+    const requestURL = `${url}/${sessionId}/retrieve_historical_conversations?output_channel=socketChannel.SocketIOInput&message_count=30&earliest_message_time=${earliestTimeStamp}`
     const token = clientToken(sessionId);
     try {
         const result = await window.fetch(requestURL, {
@@ -33,7 +33,7 @@ export const fetchOldMessage = async (url, sessionId, earliestTimeStamp) => {
 export const resendWelcomeMessage = async (url, sessionId, latestTimeStamp) => {
     const token = clientToken(sessionId);
     const requestURL = `${url}/${sessionId}/resend_welcome_message?output_channel=socketChannel.SocketIOInput`
-    const user_reconnect_time = Date.now() / 1000;
+    const user_reconnect_time = Date.now()
     try {
         const result = await window.fetch(requestURL, {
             method: 'post',
@@ -58,7 +58,7 @@ export const resendWelcomeMessage = async (url, sessionId, latestTimeStamp) => {
 }
 
 export const retrieveLostMessage = async (url, sessionId, latestTimeStamp) => {
-    const requestURL = `${url}/${sessionId}/retrieve_bot_utterance?output_channel=socketChannel.SocketIOInput&last_message_time=${latestTimeStamp / 1000}`;
+    const requestURL = `${url}/${sessionId}/retrieve_bot_utterance?output_channel=socketChannel.SocketIOInput&last_message_time=${latestTimeStamp}`;
     const token = clientToken(sessionId);
     try {
         const result = await window.fetch(requestURL, {

@@ -224,7 +224,6 @@ ConnectedWidget.propTypes = {
 ConnectedWidget.defaultProps = {
   title: 'Welcome',
   customData: {},
-  isSameUser: false,
   inputTextFieldHint: 'Type a message...',
   connectingText: 'Waiting for server...',
   fullScreenMode: false,

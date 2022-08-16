@@ -67,11 +67,9 @@ class Messages extends Component {
   componentDidUpdate(prevProps) {
     // do not scroll while there's no message
     if (prevProps.messages.size === this.props.messages.size) return;
-    if (this.isFetchedEndRef.ref) {
+    if (this.isFetchedEndRef.current) {
       scrollToTop()
-      return this.setState({
-        isFetchedEnd: false,
-      })
+      return this.isFetchedEndRef.current = false;
     }
     scrollToBottom();
   }
@@ -82,18 +80,16 @@ class Messages extends Component {
 
   async requestMessages() {
     const { messages, oldMessageURL, sessionId, dispatch } = this.props;
-    if (messages.size < 1) return
-    const earliestTimestamp = messages.get(1).get('timestamp') || new Date().getTime() / 1000;
-    const latestTimestamp = messages.get(messages.size - 1).get('timestamp');
+    const earliestTimestamp = messages?.get(1)?.get('timestamp') / 1000 || -1;
+    const latestTimestamp = messages?.get(messages.size - 1)?.get('timestamp') / 1000 || -1;
+    if (!sessionId) return;
     const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimestamp);
     if (!isEarlierExisted(result.events) || !result) {
       return this.hasMoreOldMessageRef.current = false;
     }
     // redux append history messages
     dispatch(addAllOldMessage(result.events))
-    this.setState({
-      isFetchedEnd: true
-    })
+    this.isFetchedEndRef.current = true;
     // api trigger event to send lost socket messages sent by agent
     if (Cookies.get('mode') === "connection_success") {
       await retrieveLostMessage(oldMessageURL, sessionId, latestTimestamp);
