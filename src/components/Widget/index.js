@@ -119,7 +119,9 @@ class Widget extends Component {
     const { storage } = this.props;
     // Get the local session, check if there is an existing session_id
     // handle ios lost localStorage issue
-    return Cookies.get('_sessionID') && this.props.isSameUser ? Cookies.get('_sessionID') : null;
+    const localSession = getLocalSession(storage, SESSION_NAME)
+    const localId = localSession ? localSession.session_id : null;
+    return Cookies.get('_sessionID') && this.props.isSameUser ? Cookies.get('_sessionID') : localId;
   }
 
   sendMessage(payload, text = '', when = 'always', tooltipSelector = false) {
