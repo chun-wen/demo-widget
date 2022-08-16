@@ -74,10 +74,6 @@ class Messages extends Component {
     scrollToBottom();
   }
 
-  componentWillUnmount() {
-
-  }
-
   async requestMessages() {
     const { messages, oldMessageURL, sessionId, dispatch } = this.props;
     const earliestTimestamp = messages?.get(1)?.get('timestamp') / 1000 || -1;

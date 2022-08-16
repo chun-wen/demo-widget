@@ -412,34 +412,19 @@ class Widget extends Component {
         if (localId !== remoteId) {
 
           storage.clear();
-          // Store the received session_id to storage
-
-          storeLocalSession(storage, SESSION_NAME, remoteId);
-          if (userId) {
-            Cookies.set('_sessionID', remoteId);
-          }
-          dispatch(pullSession());
-          if (sendInitPayload) {
-            this.trySendInitPayload();
-          }
-        } else {
-          // If this is an existing session, it's possible we changed pages and want to send a
-          // user message when we land.
-          const nextMessage = window.localStorage.getItem(NEXT_MESSAGE);
-
-          if (nextMessage !== null) {
-            const { message, expiry } = JSON.parse(nextMessage);
-            window.localStorage.removeItem(NEXT_MESSAGE);
-
-            if (expiry === 0 || expiry > Date.now()) {
-              dispatch(addUserMessage(message));
-              dispatch(emitUserMessage(message));
-            }
-          }
-        } if (connectOn === 'mount' && tooltipPayload) {
+        }
+        if (connectOn === 'mount' && tooltipPayload) {
           this.tooltipTimeout = setTimeout(() => {
             this.trySendTooltipPayload();
           }, parseInt(tooltipDelay, 10));
+        }
+        storeLocalSession(storage, SESSION_NAME, remoteId);
+        if (userId) {
+          Cookies.set('_sessionID', remoteId);
+        }
+        dispatch(pullSession());
+        if (sendInitPayload) {
+          this.trySendInitPayload();
         }
       });
 
