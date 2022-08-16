@@ -11,7 +11,8 @@ import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
 
 import { addAllOldMessage } from "actions";
-import fetchOldMessage from "./server/fetchData";
+import { fetchOldMessage, resendWelcomeMessage, retrieveLostMessage } from "./server/fetchData";
+import Cookies from 'js-cookie';
 
 const isToday = (date) => {
   const today = new Date();
@@ -50,11 +51,9 @@ const isAgentResponse = (message) => {
 class Messages extends Component {
   constructor() {
     super();
-    this.state = {
-      hasMoreOldMessage: true,
-      isFetchedEnd: false,
-    }
-    this.messagesRef = React.createRef(null)
+    this.messagesRef = React.createRef(null);
+    this.hasMoreOldMessageRef = React.createRef(true);
+    this.isFetchedEndRef = React.createRef(false);
   }
   componentDidMount() {
     const { isSameUser } = this.props
@@ -68,29 +67,35 @@ class Messages extends Component {
   componentDidUpdate(prevProps) {
     // do not scroll while there's no message
     if (prevProps.messages.size === this.props.messages.size) return;
-    if (this.state.isFetchedEnd) {
+    if (this.isFetchedEndRef.current) {
       scrollToTop()
-      return this.setState({
-        isFetchedEnd: false,
-      })
+      return this.isFetchedEndRef.current = false;
     }
     scrollToBottom();
   }
 
+  componentWillUnmount() {
+
+  }
+
   async requestMessages() {
     const { messages, oldMessageURL, sessionId, dispatch } = this.props;
-    if (messages.size < 1) return
-    const earliestTimeStamp = messages.get(1).get('timestamp')
-    const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimeStamp);
+    const earliestTimestamp = messages?.get(1)?.get('timestamp') / 1000 || -1;
+    const latestTimestamp = messages?.get(messages.size - 1)?.get('timestamp') / 1000 || -1;
+    if (!sessionId) return;
+    const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimestamp);
     if (!isEarlierExisted(result.events) || !result) {
-      return this.setState({
-        hasMoreOldMessage: false
-      });
+      return this.hasMoreOldMessageRef.current = false;
     }
+    // redux append history messages
     dispatch(addAllOldMessage(result.events))
-    this.setState({
-      isFetchedEnd: true
-    })
+    this.isFetchedEndRef.current = true;
+    // api trigger event to send lost socket messages sent by agent
+    if (Cookies.get('mode') === "connection_success") {
+      await retrieveLostMessage(oldMessageURL, sessionId, latestTimestamp);
+    }
+    // apit trigger event to send welcome messages to client who lost connection over ten minutes
+    await resendWelcomeMessage(oldMessageURL, sessionId, latestTimestamp);
   }
 
   getComponentToRender = (message, index, isLast) => {
@@ -144,7 +149,7 @@ class Messages extends Component {
       isSameUser } = this.props;
     const handleScroll = debounce(
       () => {
-        if (!this.state.hasMoreOldMessage || !isSameUser) return
+        if (!this.hasMoreOldMessageRef.current || !isSameUser) return
         if (messages.size < 2) return
         if (this.messagesRef.current.scrollTop === 0) {
           this.requestMessages()

@@ -118,9 +118,8 @@ class Widget extends Component {
   getSessionId() {
     const { storage } = this.props;
     // Get the local session, check if there is an existing session_id
-    const localSession = getLocalSession(storage, SESSION_NAME);
-    const localId = localSession ? localSession.session_id : null;
-    return localId;
+    // handle ios lost localStorage issue
+    return Cookies.get('_sessionID') && this.props.isSameUser ? Cookies.get('_sessionID') : null;
   }
 
   sendMessage(payload, text = '', when = 'always', tooltipSelector = false) {
@@ -383,11 +382,11 @@ class Widget extends Component {
 
       dispatch(pullSession());
 
+      const userId = Cookies.get('_userID') || '';
       // Request a session from server
       socket.on('connect', () => {
         const localId = this.getSessionId() || null;
         // empty string or user-id
-        const userId = Cookies.get('_userID') || '';
         socket.emit('session_request', { session_id: localId, user_id: userId });
       });
 
@@ -396,8 +395,7 @@ class Widget extends Component {
         const remoteId = (sessionObject && sessionObject.session_id)
           ? sessionObject.session_id
           : sessionObject;
-        // eslint-disable-next-line no-console
-        // console.log(`session_confirm:${socket.socket.id} session_id:${remoteId}`);
+        // eslint-disable-next-line no-consoleF
         // Store the initial state to both the redux store and the storage, set connected to true
         this.setState({
           remoteId
@@ -410,10 +408,14 @@ class Widget extends Component {
         */
         const localId = this.getSessionId();
         if (localId !== remoteId) {
+
           storage.clear();
           // Store the received session_id to storage
 
           storeLocalSession(storage, SESSION_NAME, remoteId);
+          if (userId) {
+            Cookies.set('_sessionID', remoteId);
+          }
           dispatch(pullSession());
           if (sendInitPayload) {
             this.trySendInitPayload();
@@ -700,7 +702,7 @@ Widget.defaultProps = {
   autoClearCache: false,
   displayUnreadCount: false,
   liveAgent: false,
-  isSameUser: false,
+
   tooltipPayload: null,
   inputTextFieldHint: 'Type a message...',
   oldUrl: '',
