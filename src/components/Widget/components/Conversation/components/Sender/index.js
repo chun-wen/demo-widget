@@ -42,6 +42,7 @@ const Sender = ({ sendMessage, inputTextFieldHint, disabledInput, userInput,conn
               disabled={disabledInput || userInput === 'disable'}
               autoFocus
               autoComplete="off"
+              maxLength={100}
           />
           <button
               type="submit"
