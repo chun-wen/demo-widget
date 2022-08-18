@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { debounce } from 'lodash'
 
 import { MESSAGES_TYPES } from 'constants';
-import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from 'messagesComponents';
+import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI, Disclaimer } from 'messagesComponents';
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
@@ -217,27 +217,37 @@ class Messages extends Component {
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
 
-    return (
-      !connected ? (
+    return !connected ? (
         <Offline locale={language} />
-      ) : showUpdateUI ? (
+    ) : showUpdateUI ? (
         <IosUpdateUI />
-      ) : (
-        <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container" ref={this.messagesRef} onScroll={(e) => handleScroll(e)} >
-          {renderMessages()}
-          {displayTypingIndication && (
-            <div className="rw-message rw-typing-indication rw-with-avatar">
-              <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
-              <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
-                <div id="wave">
-                  <span className="rw-dot" />
-                  <span className="rw-dot" />
-                  <span className="rw-dot" />
+    ) : (
+        <div
+            id="rw-messages"
+            style={{ backgroundColor: conversationBackgroundColor }}
+            className="rw-messages-container"
+            ref={this.messagesRef}
+            onScroll={e => handleScroll(e)}
+        >
+            <Disclaimer locale={language} />
+            {renderMessages()}
+            {displayTypingIndication && (
+                <div className="rw-message rw-typing-indication rw-with-avatar">
+                    <img
+                        src={liveAgent ? agentAvatar : profileAvatar}
+                        className="rw-avatar"
+                        alt="profile"
+                    />
+                    <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                        <div id="wave">
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </div>)
+            )}
+        </div>
     );
   }
 }
