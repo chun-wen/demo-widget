@@ -403,7 +403,6 @@ class Widget extends Component {
         this.setState({
           remoteId
         })
-        console.log(`this.state.remoteId:${this.state.remoteId}`);
         dispatch(connectServer());
         /*
         Check if the session_id is consistent with the server
