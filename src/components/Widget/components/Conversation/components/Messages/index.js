@@ -66,7 +66,7 @@ class Messages extends Component {
   componentDidUpdate(prevProps) {
     // do not scroll while there's no new message
     if (prevProps.messages.size === this.props.messages.size && prevProps.messages.size !== 0) return;
-    if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIner) {
+    if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIn) {
       this.getInitMessagesFromServer();
     }
   }
@@ -154,13 +154,13 @@ class Messages extends Component {
         connected,
         language,
         showUpdateUI,
-        isLoggedIner,
+        isLoggedIn,
       },
       messagesRef,
     } = this;
     const handleScroll = debounce(
       async () => {
-        if (!this.hasMoreOldMessage || !isLoggedIner) return
+        if (!this.hasMoreOldMessage || !isLoggedIn) return
         if (messagesRef.current.scrollTop === 0) {
           await this.getMoreMessages()
           scrollToTop();
@@ -262,7 +262,7 @@ Messages.propTypes = {
   agentAvatar: PropTypes.string,
   sessionId: PropTypes.string,
   oldMessageURL: PropTypes.string,
-  isLoggedIner: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   liveAgent: PropTypes.bool,
   connected: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
@@ -274,7 +274,7 @@ Messages.propTypes = {
 
 Message.defaultTypes = {
   displayTypingIndication: false,
-  isLoggedIner: false,
+  isLoggedIn: false,
   liveAgent: false,
 };
 

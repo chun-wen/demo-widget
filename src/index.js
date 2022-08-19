@@ -136,7 +136,7 @@ const ConnectedWidget = forwardRef((props, ref) => {
           agentAvatar={props.agentAvatar}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
-          isLoggedIner={props.isLoggedIner}
+          isLoggedIn={props.isLoggedIn}
           oldMessageURL={props.oldMessageURL}
           showCloseButton={props.showCloseButton}
           showFullScreenButton={props.showFullScreenButton}
@@ -180,7 +180,7 @@ ConnectedWidget.propTypes = {
   handleNewUserMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
-  isLoggedIner: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   inputTextFieldHint: PropTypes.string,
   connectingText: PropTypes.string,
