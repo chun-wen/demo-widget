@@ -1,3 +1,9 @@
+- v1.1.37
+1. Fix retrieving messages from server logic.
+
+- v1.1.36
+1. Downgrade to v1.1.30 to socket.io version 4.5.1 by cherrypick 87ad343f7cabb2a99b5fc4ec8b5ed9a4537651d8
+
 - v1.1.35
 1. Fix init payload logic.
 
