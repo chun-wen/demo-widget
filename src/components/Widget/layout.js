@@ -38,7 +38,7 @@ const WidgetLayout = (props) => {
           toggleFullScreen={props.toggleFullScreen}
           fullScreenMode={props.fullScreenMode}
           liveAgent={props.liveAgent}
-          isSameUser={props.isSameUser}
+          isLoggedIner={props.isLoggedIner}
           disabledInput={props.disabledInput}
           params={props.params}
           showFullScreenButton={props.showFullScreenButton}
@@ -90,7 +90,7 @@ WidgetLayout.propTypes = {
   oldMessageURL: PropTypes.string,
   sessionId: PropTypes.string,
   liveAgent: PropTypes.bool,
-  isSameUser: PropTypes.bool,
+  isLoggedIner: PropTypes.bool,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
   hideWhenNotConnected: PropTypes.bool,

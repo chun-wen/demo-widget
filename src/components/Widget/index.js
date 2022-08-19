@@ -369,7 +369,7 @@ class Widget extends Component {
       connectOn,
       tooltipPayload,
       tooltipDelay,
-      isSameUser
+      isLoggedIner
     } = this.props;
     if (!socket.isInitialized()) {
       socket.createSocket();
@@ -410,7 +410,7 @@ class Widget extends Component {
         If the localId is null or different from the remote_id,
         start a new session.
         */
-        if (!isSameUser) {
+        if (!isLoggedIner) {
           if (sendInitPayload) {
             this.trySendInitPayload();
           }
@@ -594,7 +594,7 @@ class Widget extends Component {
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
         sessionId={this.state.remoteId}
-        isSameUser={this.props.isSameUser}
+        isLoggedIner={this.props.isLoggedIner}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -640,7 +640,7 @@ Widget.propTypes = {
   liveAgent: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-  isSameUser: PropTypes.bool,
+  isLoggedIner: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
