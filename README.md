@@ -1,3 +1,6 @@
+- v1.1.35
+1. Fix init payload logic.
+
 - v1.1.34
 1. Fix get undefined sessionID.
 

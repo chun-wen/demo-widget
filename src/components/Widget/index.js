@@ -118,10 +118,9 @@ class Widget extends Component {
   getSessionId() {
     const { storage } = this.props;
     // Get the local session, check if there is an existing session_id
-    // handle ios lost localStorage issue
-    const localSession = getLocalSession(storage, SESSION_NAME)
+    const localSession = getLocalSession(storage, SESSION_NAME);
     const localId = localSession ? localSession.session_id : null;
-    return Cookies.get('_sessionID') && this.props.isSameUser ? Cookies.get('_sessionID') : localId;
+    return localId;
   }
 
   sendMessage(payload, text = '', when = 'always', tooltipSelector = false) {
@@ -369,7 +368,8 @@ class Widget extends Component {
       initialized,
       connectOn,
       tooltipPayload,
-      tooltipDelay
+      tooltipDelay,
+      isLoggedIner
     } = this.props;
     if (!socket.isInitialized()) {
       socket.createSocket();
@@ -381,14 +381,15 @@ class Widget extends Component {
       });
 
       this.checkVersionBeforePull();
+      // dispatch(pullSession());
+      storage.clear();
 
-      dispatch(pullSession());
 
-      const userId = Cookies.get('_userID') || '';
-      // Request a session from server
       socket.on('connect', () => {
+        // Cookies value is from web cookies' muid
+        const userId = Cookies.get('_userID') || '';
         const localId = this.getSessionId() || null;
-        // empty string or user-id
+        // Request a session from server
         socket.emit('session_request', { session_id: localId, user_id: userId });
       });
 
@@ -402,41 +403,19 @@ class Widget extends Component {
         this.setState({
           remoteId
         })
+        console.log(`this.state.remoteId:${this.state.remoteId}`);
         dispatch(connectServer());
         /*
         Check if the session_id is consistent with the server
         If the localId is null or different from the remote_id,
         start a new session.
         */
-        const localId = this.getSessionId();
-        if (localId !== remoteId) {
-
-          storage.clear();
-          // Store the received session_id to storage
-
-          storeLocalSession(storage, SESSION_NAME, remoteId);
-          if (userId) {
-            Cookies.set('_sessionID', remoteId);
-          }
-          dispatch(pullSession());
+        if (!isLoggedIner) {
           if (sendInitPayload) {
             this.trySendInitPayload();
           }
-        } else {
-          // If this is an existing session, it's possible we changed pages and want to send a
-          // user message when we land.
-          const nextMessage = window.localStorage.getItem(NEXT_MESSAGE);
-
-          if (nextMessage !== null) {
-            const { message, expiry } = JSON.parse(nextMessage);
-            window.localStorage.removeItem(NEXT_MESSAGE);
-
-            if (expiry === 0 || expiry > Date.now()) {
-              dispatch(addUserMessage(message));
-              dispatch(emitUserMessage(message));
-            }
-          }
-        } if (connectOn === 'mount' && tooltipPayload) {
+        }
+        if (connectOn === 'mount' && tooltipPayload) {
           this.tooltipTimeout = setTimeout(() => {
             this.trySendTooltipPayload();
           }, parseInt(tooltipDelay, 10));
@@ -615,7 +594,7 @@ class Widget extends Component {
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
         sessionId={this.state.remoteId}
-        isSameUser={this.props.isSameUser}
+        isLoggedIner={this.props.isLoggedIner}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -661,7 +640,7 @@ Widget.propTypes = {
   liveAgent: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-  isSameUser: PropTypes.bool,
+  isLoggedIner: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
