@@ -25,7 +25,7 @@ const Conversation = props =>
       customComponent={props.customComponent}
       showMessageDate={props.showMessageDate}
       agentAvatar={props.agentAvatar}
-      isSameUser={props.isSameUser}
+      isLoggedIner={props.isLoggedIner}
       liveAgent={props.liveAgent}
       connected={props.connected}
       language={props.language}
@@ -47,7 +47,7 @@ Conversation.propTypes = {
   sendMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
-  isSameUser: PropTypes.bool,
+  isLoggedIner: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   sessionId: PropTypes.string,
   liveAgent: PropTypes.bool,

@@ -11,8 +11,7 @@ import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
 
 import { addAllOldMessage } from "actions";
-import { fetchOldMessage, resendWelcomeMessage, retrieveLostMessage } from "./server/fetchData";
-import Cookies from 'js-cookie';
+import { fetchOldMessage, resendWelcomeMessage } from "./server/fetchData";
 
 const isToday = (date) => {
   const today = new Date();
@@ -35,13 +34,17 @@ const scrollToBottom = () => {
 };
 
 const scrollToTop = () => {
+  console.log('scroll top');
   const messagesDiv = document.getElementById('rw-messages');
   if (messagesDiv) {
     messagesDiv.scrollTop = 1;
   }
 };
 
-const isEarlierExisted = (response) => response !== []
+const isEarlierExisted = (response) => {
+  console.log(`isEarlierExisted length:${response.length}`);
+  if (Array.isArray(response)) return response.length !== 0;
+}
 
 const isAgentResponse = (message) => {
   const prefix = 'agent:';
@@ -52,47 +55,55 @@ class Messages extends Component {
   constructor() {
     super();
     this.messagesRef = React.createRef(null);
-    this.hasMoreOldMessageRef = React.createRef(true);
-    this.isFetchedEndRef = React.createRef(false);
+    this.hasMoreOldMessage = true;
+    this.isScrollToFetchedEnd = false;
+    this.earliestTimestamp = -1;
   }
   componentDidMount() {
-    const { isSameUser } = this.props
-    if (isSameUser) {
-      this.requestMessages();
-      return scrollToTop();
-    }
     scrollToBottom();
   }
 
   componentDidUpdate(prevProps) {
-    // do not scroll while there's no message
-    if (prevProps.messages.size === this.props.messages.size) return;
-    if (this.isFetchedEndRef.current) {
-      scrollToTop()
-      return this.isFetchedEndRef.current = false;
+    // do not scroll while there's no new message
+    if (prevProps.messages.size === this.props.messages.size && prevProps.messages.size !== 0) return;
+    if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIner) {
+      this.getInitMessagesFromServer();
     }
+  }
+
+  getMoreMessages = async () => {
+    const { sessionId } = this.props;
+    console.log(`sessionId:${sessionId},earliestTimestamp:${this.earliestTimestamp}`);
+    if (!sessionId) return;
+    this.fetchMessageRequest();
+    this.isScrollToFetchedEnd = true;
+  }
+
+  async fetchMessageRequest() {
+    const { oldMessageURL, sessionId, dispatch } = this.props;
+    // no session id props in or no elder messages
+    if (!sessionId || !this.hasMoreOldMessage) return;
+    const result = await fetchOldMessage(oldMessageURL, sessionId, this.earliestTimestamp);
+    if (!result) return;
+    if (!isEarlierExisted(result.events)) {
+      this.hasMoreOldMessage = false;
+      console.log(`hasMoreOldMessage222:${this.hasMoreOldMessage}`);
+      return
+    }
+    this.earliestTimestamp = result.events[0]?.timestamp;
+    // redux append history messages
+    dispatch(addAllOldMessage(result.events));
+  }
+
+  async getInitMessagesFromServer() {
+    const { props: { oldMessageURL, sessionId }, earliestTimestamp } = this;
+    if (!sessionId) return;
+    this.fetchMessageRequest();
+    // api trigger event to send welcome messages to client who lost connection over ten minutes
+    await resendWelcomeMessage(oldMessageURL, sessionId, Date.now() / 1000);
     scrollToBottom();
   }
 
-  async requestMessages() {
-    const { messages, oldMessageURL, sessionId, dispatch } = this.props;
-    const earliestTimestamp = messages?.get(1)?.get('timestamp') / 1000 || -1;
-    const latestTimestamp = messages?.get(messages.size - 1)?.get('timestamp') / 1000 || -1;
-    if (!sessionId) return;
-    const result = await fetchOldMessage(oldMessageURL, sessionId, earliestTimestamp);
-    if (!isEarlierExisted(result.events) || !result) {
-      return this.hasMoreOldMessageRef.current = false;
-    }
-    // redux append history messages
-    dispatch(addAllOldMessage(result.events))
-    this.isFetchedEndRef.current = true;
-    // api trigger event to send lost socket messages sent by agent
-    if (Cookies.get('mode') === "connection_success") {
-      await retrieveLostMessage(oldMessageURL, sessionId, latestTimestamp);
-    }
-    // apit trigger event to send welcome messages to client who lost connection over ten minutes
-    await resendWelcomeMessage(oldMessageURL, sessionId, latestTimestamp);
-  }
 
   getComponentToRender = (message, index, isLast) => {
     const { params } = this.props;
@@ -134,23 +145,28 @@ class Messages extends Component {
   }
 
   render() {
-    const { displayTypingIndication,
-      profileAvatar,
-      agentAvatar,
-      liveAgent,
-      connected,
-      language,
-      showUpdateUI,
-      messages,
-      isSameUser } = this.props;
+    const {
+      props: {
+        displayTypingIndication,
+        profileAvatar,
+        agentAvatar,
+        liveAgent,
+        connected,
+        language,
+        showUpdateUI,
+        isLoggedIner,
+      },
+      messagesRef,
+    } = this;
     const handleScroll = debounce(
-      () => {
-        if (!this.hasMoreOldMessageRef.current || !isSameUser) return
-        if (messages.size < 2) return
-        if (this.messagesRef.current.scrollTop === 0) {
-          this.requestMessages()
+      async () => {
+        if (!this.hasMoreOldMessage || !isLoggedIner) return
+        if (messagesRef.current.scrollTop === 0) {
+          await this.getMoreMessages()
+          scrollToTop();
         }
-      }
+      },
+      1000
     )
     const renderMessages = () => {
       const {
@@ -162,8 +178,6 @@ class Messages extends Component {
 
       const groups = [];
       let group = null;
-
-
 
       const dateRenderer = typeof showMessageDate === 'function' ? showMessageDate :
         showMessageDate === true ? formatDate : null;
@@ -248,7 +262,7 @@ Messages.propTypes = {
   agentAvatar: PropTypes.string,
   sessionId: PropTypes.string,
   oldMessageURL: PropTypes.string,
-  isSameUser: PropTypes.bool,
+  isLoggedIner: PropTypes.bool,
   liveAgent: PropTypes.bool,
   connected: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
@@ -260,7 +274,7 @@ Messages.propTypes = {
 
 Message.defaultTypes = {
   displayTypingIndication: false,
-  isSameUser: false,
+  isLoggedIner: false,
   liveAgent: false,
 };
 
