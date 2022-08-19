@@ -369,7 +369,7 @@ class Widget extends Component {
       connectOn,
       tooltipPayload,
       tooltipDelay,
-      isLoggedIner
+      isLoggedIn
     } = this.props;
     if (!socket.isInitialized()) {
       socket.createSocket();
@@ -403,14 +403,13 @@ class Widget extends Component {
         this.setState({
           remoteId
         })
-        console.log(`this.state.remoteId:${this.state.remoteId}`);
         dispatch(connectServer());
         /*
         Check if the session_id is consistent with the server
         If the localId is null or different from the remote_id,
         start a new session.
         */
-        if (!isLoggedIner) {
+        if (!isLoggedIn) {
           if (sendInitPayload) {
             this.trySendInitPayload();
           }
@@ -594,7 +593,7 @@ class Widget extends Component {
         language={this.props.language}
         showUpdateUI={this.props.showUpdateUI}
         sessionId={this.state.remoteId}
-        isLoggedIner={this.props.isLoggedIner}
+        isLoggedIn={this.props.isLoggedIn}
         showCloseButton={this.props.showCloseButton}
         showFullScreenButton={this.props.showFullScreenButton}
         hideWhenNotConnected={this.props.hideWhenNotConnected}
@@ -640,7 +639,7 @@ Widget.propTypes = {
   liveAgent: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-  isLoggedIner: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,

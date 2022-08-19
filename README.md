@@ -1,3 +1,7 @@
+- v1.1.38
+1. Modified scroll logic
+2. Fixed the isLoggedIn props typo
+
 - v1.1.37
 1. Fix retrieving messages from server logic.
 

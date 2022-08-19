@@ -34,7 +34,6 @@ const scrollToBottom = () => {
 };
 
 const scrollToTop = () => {
-  console.log('scroll top');
   const messagesDiv = document.getElementById('rw-messages');
   if (messagesDiv) {
     messagesDiv.scrollTop = 1;
@@ -42,7 +41,6 @@ const scrollToTop = () => {
 };
 
 const isEarlierExisted = (response) => {
-  console.log(`isEarlierExisted length:${response.length}`);
   if (Array.isArray(response)) return response.length !== 0;
 }
 
@@ -56,8 +54,9 @@ class Messages extends Component {
     super();
     this.messagesRef = React.createRef(null);
     this.hasMoreOldMessage = true;
-    this.isScrollToFetchedEnd = false;
+    this.isScrollEnd = false;
     this.earliestTimestamp = -1;
+    this.latestTimestamp = null;
   }
   componentDidMount() {
     scrollToBottom();
@@ -66,17 +65,16 @@ class Messages extends Component {
   componentDidUpdate(prevProps) {
     // do not scroll while there's no new message
     if (prevProps.messages.size === this.props.messages.size && prevProps.messages.size !== 0) return;
-    if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIner) {
+    if (prevProps.sessionId === null && this.props.sessionId) {
       this.getInitMessagesFromServer();
     }
+    if (!this.isScrollEnd) scrollToBottom()
   }
 
   getMoreMessages = async () => {
     const { sessionId } = this.props;
-    console.log(`sessionId:${sessionId},earliestTimestamp:${this.earliestTimestamp}`);
     if (!sessionId) return;
     this.fetchMessageRequest();
-    this.isScrollToFetchedEnd = true;
   }
 
   async fetchMessageRequest() {
@@ -84,10 +82,10 @@ class Messages extends Component {
     // no session id props in or no elder messages
     if (!sessionId || !this.hasMoreOldMessage) return;
     const result = await fetchOldMessage(oldMessageURL, sessionId, this.earliestTimestamp);
+    this.latestTimestamp = result.latest_event_time
     if (!result) return;
     if (!isEarlierExisted(result.events)) {
       this.hasMoreOldMessage = false;
-      console.log(`hasMoreOldMessage222:${this.hasMoreOldMessage}`);
       return
     }
     this.earliestTimestamp = result.events[0]?.timestamp;
@@ -96,11 +94,11 @@ class Messages extends Component {
   }
 
   async getInitMessagesFromServer() {
-    const { props: { oldMessageURL, sessionId }, earliestTimestamp } = this;
+    const { props: { oldMessageURL, sessionId } } = this;
     if (!sessionId) return;
-    this.fetchMessageRequest();
+    if (this.props.isLoggedIn) await this.fetchMessageRequest();
     // api trigger event to send welcome messages to client who lost connection over ten minutes
-    await resendWelcomeMessage(oldMessageURL, sessionId, Date.now() / 1000);
+    await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
     scrollToBottom();
   }
 
@@ -154,16 +152,18 @@ class Messages extends Component {
         connected,
         language,
         showUpdateUI,
-        isLoggedIner,
+        isLoggedIn,
       },
       messagesRef,
     } = this;
     const handleScroll = debounce(
       async () => {
-        if (!this.hasMoreOldMessage || !isLoggedIner) return
+        this.isScrollEnd = false;
+        if (!this.hasMoreOldMessage || !isLoggedIn) return
         if (messagesRef.current.scrollTop === 0) {
           await this.getMoreMessages()
           scrollToTop();
+          this.isScrollEnd = true;
         }
       },
       1000
@@ -262,7 +262,7 @@ Messages.propTypes = {
   agentAvatar: PropTypes.string,
   sessionId: PropTypes.string,
   oldMessageURL: PropTypes.string,
-  isLoggedIner: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   liveAgent: PropTypes.bool,
   connected: PropTypes.bool,
   language: PropTypes.oneOf(['zh', 'en']),
@@ -274,7 +274,7 @@ Messages.propTypes = {
 
 Message.defaultTypes = {
   displayTypingIndication: false,
-  isLoggedIner: false,
+  isLoggedIn: false,
   liveAgent: false,
 };
 
