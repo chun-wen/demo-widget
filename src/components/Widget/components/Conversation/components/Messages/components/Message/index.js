@@ -8,6 +8,9 @@ import DocViewer from '../docViewer';
 import './styles.scss';
 import ThemeContext from '../../../../../../ThemeContext';
 import reactStringReplace from 'react-string-replace';
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
 class Message extends PureComponent {
   render() {
     const isAgentResponse = (message) => {
@@ -18,18 +21,19 @@ class Message extends PureComponent {
 
     const isImageServerURL = (message) => {
       const imageServerURLPrefix = "https://chatbot-imageserver";
-      if(typeof message !== 'string') return false;
+      if (typeof message !== 'string') return false;
       return message.startsWith(imageServerURLPrefix)
     }
 
     const parsedText = (message) => {
       const urlRegex = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/ig;
-      if(typeof message !== 'string') return message
-      if(!urlRegex.test(message) && !isImageServerURL(message)) return message
-      if(isImageServerURL(message)) return <img alt="uploadImage" src={message} className="rw-imageFrame" />
+      if (typeof message !== 'string') return message
+      if (!urlRegex.test(message) && !isImageServerURL(message)) return message
+      if (isImageServerURL(message)) return <img alt="uploadImage" src={message} className="rw-imageFrame" />
 
-      return reactStringReplace(message, urlRegex, (match, i) => <a key={match + i} href={match} className="urlLink" style={{color:"rgb(255, 255, 255)",textDecoration:"underline"}} rel="noopener" target="_blank">{match}</a>)
+      return reactStringReplace(message, urlRegex, (match, i) => <a key={match + i} href={match} className="urlLink" style={{ color: "rgb(255, 255, 255)", textDecoration: "underline" }} rel="noopener" target="_blank">{match}</a>)
     }
+
 
     const { docViewer, linkTarget } = this.props;
     const sender = this.props.message.get('sender');
@@ -64,7 +68,7 @@ class Message extends PureComponent {
         >{sender === 'response' ? (
           <ReactMarkdown
             className={'rw-markdown'}
-            source={text}
+            children={text}
             linkTarget={(url) => {
               if (!url.startsWith('mailto') && !url.startsWith('javascript')) return '_blank';
               return undefined;
@@ -78,6 +82,8 @@ class Message extends PureComponent {
                   <a href={props.href} target={linkTarget || '_blank'} rel="noopener noreferrer" onMouseUp={e => e.stopPropagation()}>{props.children}</a>
                 )
             }}
+            rehypePlugins={[rehypeRaw]}
+            remarkPlugins={[remarkGfm]}
           />
         ) : (
           parsedText(text)
