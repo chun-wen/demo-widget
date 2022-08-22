@@ -454,8 +454,7 @@ class Widget extends Component {
     // Send initial payload when chat is opened or widget is shown
     if (!initialized && connected && ((isChatOpen && isChatVisible) || embedded)) {
       // Only send initial payload if the widget is connected to the server but not yet initialized
-
-      const sessionId = this.getSessionId();
+      const sessionId = this.state.remoteId
       // check that session_id is confirmed
       if (!sessionId) return;
 

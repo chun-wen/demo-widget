@@ -65,7 +65,7 @@ class Messages extends Component {
   componentDidUpdate(prevProps) {
     // do not scroll while there's no new message
     if (prevProps.messages.size === this.props.messages.size && prevProps.messages.size !== 0) return;
-    if (prevProps.sessionId === null && this.props.sessionId) {
+    if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIn) {
       this.getInitMessagesFromServer();
     }
     if (!this.isScrollEnd) scrollToBottom()
@@ -96,7 +96,7 @@ class Messages extends Component {
   async getInitMessagesFromServer() {
     const { props: { oldMessageURL, sessionId } } = this;
     if (!sessionId) return;
-    if (this.props.isLoggedIn) await this.fetchMessageRequest();
+    await this.fetchMessageRequest();
     // api trigger event to send welcome messages to client who lost connection over ten minutes
     await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
     scrollToBottom();
