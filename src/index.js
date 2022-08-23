@@ -134,6 +134,8 @@ const ConnectedWidget = forwardRef((props, ref) => {
           handleNewUserMessage={props.handleNewUserMessage}
           profileAvatar={props.profileAvatar}
           agentAvatar={props.agentAvatar}
+          uploadImageIcon={props.uploadImageIcon}
+          imageServerUrl={props.imageServerUrl}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
           isSameUser={props.isSameUser}
@@ -180,6 +182,8 @@ ConnectedWidget.propTypes = {
   handleNewUserMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  uploadImageIcon: PropTypes.string,
+  imageServerUrl: PropTypes.string,
   isSameUser: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   inputTextFieldHint: PropTypes.string,
