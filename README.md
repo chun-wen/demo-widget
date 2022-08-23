@@ -1,3 +1,6 @@
+- v1.1.39
+1. Changed sessionID from session_confirm instead of localStorage.
+
 - v1.1.38
 1. Modified scroll logic
 2. Fixed the isLoggedIn props typo
