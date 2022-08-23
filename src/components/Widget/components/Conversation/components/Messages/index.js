@@ -33,10 +33,10 @@ const scrollToBottom = () => {
   }
 };
 
-const scrollToTop = () => {
+const scrollToPosY = (scrollY) => {
   const messagesDiv = document.getElementById('rw-messages');
   if (messagesDiv) {
-    messagesDiv.scrollTop = 1;
+    messagesDiv.scrollTop = scrollY;
   }
 };
 
@@ -55,6 +55,7 @@ class Messages extends Component {
     this.messagesRef = React.createRef(null);
     this.hasMoreOldMessage = true;
     this.isScrollEnd = false;
+    this.prevHeight = 0;
     this.earliestTimestamp = -1;
     this.latestTimestamp = null;
   }
@@ -68,7 +69,9 @@ class Messages extends Component {
     if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIn) {
       this.getInitMessagesFromServer();
     }
-    if (!this.isScrollEnd) scrollToBottom()
+    const currentHeight = this.messagesRef.current?.scrollHeight;
+    if (!this.isScrollEnd) return scrollToBottom();
+    scrollToPosY(currentHeight - this.prevHeight);
   }
 
   getMoreMessages = async () => {
@@ -162,8 +165,8 @@ class Messages extends Component {
         if (!this.hasMoreOldMessage || !isLoggedIn) return
         if (messagesRef.current.scrollTop === 0) {
           await this.getMoreMessages()
-          scrollToTop();
           this.isScrollEnd = true;
+          this.prevHeight = messagesRef.current.scrollHeight
         }
       },
       1000
