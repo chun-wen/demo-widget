@@ -25,7 +25,7 @@ const Conversation = props =>
             customComponent={props.customComponent}
             showMessageDate={props.showMessageDate}
             agentAvatar={props.agentAvatar}
-            isSameUser={props.isSameUser}
+            isLoggedIn={props.isLoggedIn}
             liveAgent={props.liveAgent}
             connected={props.connected}
             language={props.language}
@@ -54,7 +54,7 @@ Conversation.propTypes = {
   showUpdateUI: PropTypes.bool,
   uploadImageIcon: PropTypes.string,
   imageServerUrl: PropTypes.string,
-  isSameUser: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   sessionId: PropTypes.string,
   liveAgent: PropTypes.bool,

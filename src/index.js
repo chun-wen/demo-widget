@@ -138,7 +138,7 @@ const ConnectedWidget = forwardRef((props, ref) => {
           imageServerUrl={props.imageServerUrl}
           language={props.language}
           showUpdateUI={props.showUpdateUI}
-          isSameUser={props.isSameUser}
+          isLoggedIn={props.isLoggedIn}
           oldMessageURL={props.oldMessageURL}
           showCloseButton={props.showCloseButton}
           showFullScreenButton={props.showFullScreenButton}
@@ -184,7 +184,7 @@ ConnectedWidget.propTypes = {
   agentAvatar: PropTypes.string,
   uploadImageIcon: PropTypes.string,
   imageServerUrl: PropTypes.string,
-  isSameUser: PropTypes.bool,
+  isLoggedIn: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   inputTextFieldHint: PropTypes.string,
   connectingText: PropTypes.string,
