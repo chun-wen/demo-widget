@@ -41,6 +41,8 @@ import { isVideo, isImage, isButtons, isText, isCarousel, isLiveAgent } from './
 import WidgetLayout from './layout';
 import { storeLocalSession, getLocalSession } from '../../store/reducers/helper';
 import Cookies from 'js-cookie';
+
+const isLogin = (muid) => muid !== '' && muid !== '0';
 class Widget extends Component {
   constructor(props) {
     super(props);
@@ -369,7 +371,7 @@ class Widget extends Component {
       connectOn,
       tooltipPayload,
       tooltipDelay,
-      isLoggedIn
+      muid
     } = this.props;
     if (!socket.isInitialized()) {
       socket.createSocket();
@@ -386,8 +388,8 @@ class Widget extends Component {
 
 
       socket.on('connect', () => {
-        // Cookies value is from web cookies' muid
-        const userId = Cookies.get('_userID') || '';
+        // anonymous user's muid is '0' or ''
+        const userId = isLogin(muid) ? muid : '';
         const localId = this.getSessionId() || null;
         // Request a session from server
         socket.emit('session_request', { session_id: localId, user_id: userId });
@@ -409,11 +411,7 @@ class Widget extends Component {
         If the localId is null or different from the remote_id,
         start a new session.
         */
-        if (!isLoggedIn) {
-          if (sendInitPayload) {
-            this.trySendInitPayload();
-          }
-        }
+        this.trySendInitPayload();
         if (connectOn === 'mount' && tooltipPayload) {
           this.tooltipTimeout = setTimeout(() => {
             this.trySendTooltipPayload();
@@ -449,7 +447,8 @@ class Widget extends Component {
       isChatVisible,
       embedded,
       connected,
-      dispatch
+      dispatch,
+      muid
     } = this.props;
     // Send initial payload when chat is opened or widget is shown
     if (!initialized && connected && ((isChatOpen && isChatVisible) || embedded)) {
@@ -460,7 +459,9 @@ class Widget extends Component {
 
       // eslint-disable-next-line no-console
       // console.log('sending init payload', sessionId);
-      socket.emit('user_uttered', { message: initPayload, customData, session_id: sessionId });
+      if (!isLogin(muid)) {
+        socket.emit('user_uttered', { message: initPayload, customData, session_id: sessionId });
+      }
       dispatch(initialize());
     }
   }
@@ -578,48 +579,48 @@ class Widget extends Component {
 
   handelImageUrlSubmit(imageUrl) {
     if (imageUrl) {
-        this.props.dispatch(addUserMessage(imageUrl));
-        this.props.dispatch(emitUserMessage(imageUrl));
+      this.props.dispatch(addUserMessage(imageUrl));
+      this.props.dispatch(emitUserMessage(imageUrl));
     }
   }
 
   render() {
     return (
-        <WidgetLayout
-            toggleChat={() => this.toggleConversation()}
-            toggleFullScreen={() => this.toggleFullScreen()}
-            onSendMessage={event => this.handleMessageSubmit(event)}
-            onSendImageUrl={this.handelImageUrlSubmit.bind(this)}
-            title={this.props.title}
-            subtitle={this.props.subtitle}
-            customData={this.props.customData}
-            profileAvatar={this.props.profileAvatar}
-            agentAvatar={this.props.agentAvatar}
-            uploadImageIcon={this.props.uploadImageIcon}
-            imageServerUrl={this.props.imageServerUrl}
-            oldMessageURL={this.props.oldMessageURL}
-            liveAgent={this.props.liveAgent}
-            language={this.props.language}
-            showUpdateUI={this.props.showUpdateUI}
-            sessionId={this.state.remoteId}
-            isLoggedIn={this.props.isLoggedIn}
-            showCloseButton={this.props.showCloseButton}
-            showFullScreenButton={this.props.showFullScreenButton}
-            hideWhenNotConnected={this.props.hideWhenNotConnected}
-            fullScreenMode={this.props.fullScreenMode}
-            isChatOpen={this.props.isChatOpen}
-            isChatVisible={this.props.isChatVisible}
-            badge={this.props.badge}
-            embedded={this.props.embedded}
-            params={this.props.params}
-            openLauncherImage={this.props.openLauncherImage}
-            inputTextFieldHint={this.props.inputTextFieldHint}
-            closeImage={this.props.closeImage}
-            customComponent={this.props.customComponent}
-            displayUnreadCount={this.props.displayUnreadCount}
-            showMessageDate={this.props.showMessageDate}
-            tooltipPayload={this.props.tooltipPayload}
-        />
+      <WidgetLayout
+        toggleChat={() => this.toggleConversation()}
+        toggleFullScreen={() => this.toggleFullScreen()}
+        onSendMessage={event => this.handleMessageSubmit(event)}
+        onSendImageUrl={this.handelImageUrlSubmit.bind(this)}
+        title={this.props.title}
+        subtitle={this.props.subtitle}
+        customData={this.props.customData}
+        profileAvatar={this.props.profileAvatar}
+        agentAvatar={this.props.agentAvatar}
+        uploadImageIcon={this.props.uploadImageIcon}
+        imageServerUrl={this.props.imageServerUrl}
+        oldMessageURL={this.props.oldMessageURL}
+        liveAgent={this.props.liveAgent}
+        language={this.props.language}
+        showUpdateUI={this.props.showUpdateUI}
+        sessionId={this.state.remoteId}
+        isLoggedIn={isLogin(this.props.muid)}
+        showCloseButton={this.props.showCloseButton}
+        showFullScreenButton={this.props.showFullScreenButton}
+        hideWhenNotConnected={this.props.hideWhenNotConnected}
+        fullScreenMode={this.props.fullScreenMode}
+        isChatOpen={this.props.isChatOpen}
+        isChatVisible={this.props.isChatVisible}
+        badge={this.props.badge}
+        embedded={this.props.embedded}
+        params={this.props.params}
+        openLauncherImage={this.props.openLauncherImage}
+        inputTextFieldHint={this.props.inputTextFieldHint}
+        closeImage={this.props.closeImage}
+        customComponent={this.props.customComponent}
+        displayUnreadCount={this.props.displayUnreadCount}
+        showMessageDate={this.props.showMessageDate}
+        tooltipPayload={this.props.tooltipPayload}
+      />
     );
   }
 }
@@ -650,7 +651,7 @@ Widget.propTypes = {
   imageServerUrl: PropTypes.string,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
-  isLoggedIn: PropTypes.bool,
+  muid: PropTypes.string,
   oldMessageURL: PropTypes.string,
   showCloseButton: PropTypes.bool,
   showFullScreenButton: PropTypes.bool,
