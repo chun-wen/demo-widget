@@ -21,49 +21,52 @@ const WidgetLayout = (props) => {
   }
 
   return isVisible ? (
-    <div className={classes.join(' ')}>
-      {chatShowing && (
-        <Conversation
-          title={props.title}
-          subtitle={props.subtitle}
-          sendMessage={props.onSendMessage}
-          profileAvatar={props.profileAvatar}
-          agentAvatar={props.agentAvatar}
-          language={props.language}
-          showUpdateUI={props.showUpdateUI}
-          oldMessageURL={props.oldMessageURL}
-          sessionId={props.sessionId}
-          toggleChat={props.toggleChat}
-          isChatOpen={props.isChatOpen}
-          toggleFullScreen={props.toggleFullScreen}
-          fullScreenMode={props.fullScreenMode}
-          liveAgent={props.liveAgent}
-          isLoggedIn={props.isLoggedIn}
-          disabledInput={props.disabledInput}
-          params={props.params}
-          showFullScreenButton={props.showFullScreenButton}
-          {...{ showCloseButton }}
-          connected={props.connected}
-          connectingText={props.connectingText}
-          closeImage={props.closeImage}
-          customComponent={props.customComponent}
-          showMessageDate={props.showMessageDate}
-          inputTextFieldHint={props.inputTextFieldHint}
-        />
-      )}
-      {!props.embedded && (
-        <Launcher
-          toggle={props.toggleChat}
-          isChatOpen={props.isChatOpen}
-          badge={props.badge}
-          fullScreenMode={props.fullScreenMode}
-          openLauncherImage={props.openLauncherImage}
-          closeImage={props.closeImage}
-          displayUnreadCount={props.displayUnreadCount}
-          tooltipPayload={props.tooltipPayload}
-        />
-      )}
-    </div>
+      <div className={classes.join(' ')}>
+          {chatShowing && (
+              <Conversation
+                  title={props.title}
+                  subtitle={props.subtitle}
+                  sendMessage={props.onSendMessage}
+                  sendImageUrl={props.onSendImageUrl}
+                  profileAvatar={props.profileAvatar}
+                  agentAvatar={props.agentAvatar}
+                  uploadImageIcon={props.uploadImageIcon}
+                  imageServerUrl={props.imageServerUrl}
+                  language={props.language}
+                  showUpdateUI={props.showUpdateUI}
+                  oldMessageURL={props.oldMessageURL}
+                  sessionId={props.sessionId}
+                  toggleChat={props.toggleChat}
+                  isChatOpen={props.isChatOpen}
+                  toggleFullScreen={props.toggleFullScreen}
+                  fullScreenMode={props.fullScreenMode}
+                  liveAgent={props.liveAgent}
+                  isLoggedIn={props.isLoggedIn}
+                  disabledInput={props.disabledInput}
+                  params={props.params}
+                  showFullScreenButton={props.showFullScreenButton}
+                  {...{ showCloseButton }}
+                  connected={props.connected}
+                  connectingText={props.connectingText}
+                  closeImage={props.closeImage}
+                  customComponent={props.customComponent}
+                  showMessageDate={props.showMessageDate}
+                  inputTextFieldHint={props.inputTextFieldHint}
+              />
+          )}
+          {!props.embedded && (
+              <Launcher
+                  toggle={props.toggleChat}
+                  isChatOpen={props.isChatOpen}
+                  badge={props.badge}
+                  fullScreenMode={props.fullScreenMode}
+                  openLauncherImage={props.openLauncherImage}
+                  closeImage={props.closeImage}
+                  displayUnreadCount={props.displayUnreadCount}
+                  tooltipPayload={props.tooltipPayload}
+              />
+          )}
+      </div>
   ) : null;
 };
 
@@ -85,6 +88,8 @@ WidgetLayout.propTypes = {
   isChatVisible: PropTypes.bool,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  uploadImageIcon: PropTypes.string,
+  imageServerUrl: PropTypes.string, 
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
   oldMessageURL: PropTypes.string,

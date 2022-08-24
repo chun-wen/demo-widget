@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import { debounce } from 'lodash'
 
 import { MESSAGES_TYPES } from 'constants';
-import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI } from 'messagesComponents';
+import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI, Disclaimer } from 'messagesComponents';
 
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
 
-import { addAllOldMessage } from "actions";
+import { addAllOldMessage, toggleLiveAgent } from "actions";
 import { fetchOldMessage, resendWelcomeMessage } from "./server/fetchData";
 
 const isToday = (date) => {
@@ -33,10 +33,10 @@ const scrollToBottom = () => {
   }
 };
 
-const scrollToTop = () => {
+const scrollToPosY = (scrollY) => {
   const messagesDiv = document.getElementById('rw-messages');
   if (messagesDiv) {
-    messagesDiv.scrollTop = 1;
+    messagesDiv.scrollTop = scrollY;
   }
 };
 
@@ -55,6 +55,7 @@ class Messages extends Component {
     this.messagesRef = React.createRef(null);
     this.hasMoreOldMessage = true;
     this.isScrollEnd = false;
+    this.prevHeight = 0;
     this.earliestTimestamp = -1;
     this.latestTimestamp = null;
   }
@@ -68,7 +69,9 @@ class Messages extends Component {
     if (prevProps.sessionId === null && this.props.sessionId && this.props.isLoggedIn) {
       this.getInitMessagesFromServer();
     }
-    if (!this.isScrollEnd) scrollToBottom()
+    const currentHeight = this.messagesRef.current?.scrollHeight;
+    if (!this.isScrollEnd) return scrollToBottom();
+    scrollToPosY(currentHeight - this.prevHeight);
   }
 
   getMoreMessages = async () => {
@@ -94,11 +97,13 @@ class Messages extends Component {
   }
 
   async getInitMessagesFromServer() {
-    const { props: { oldMessageURL, sessionId } } = this;
+    const { props: { oldMessageURL, sessionId, dispatch } } = this;
     if (!sessionId) return;
     await this.fetchMessageRequest();
     // api trigger event to send welcome messages to client who lost connection over ten minutes
-    await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
+    const result = await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
+    document.cookie = `mode=${result.mode}`;
+    this.props.dispatch(toggleLiveAgent(result.mode));
     scrollToBottom();
   }
 
@@ -162,8 +167,8 @@ class Messages extends Component {
         if (!this.hasMoreOldMessage || !isLoggedIn) return
         if (messagesRef.current.scrollTop === 0) {
           await this.getMoreMessages()
-          scrollToTop();
           this.isScrollEnd = true;
+          this.prevHeight = messagesRef.current.scrollHeight
         }
       },
       1000
@@ -231,27 +236,37 @@ class Messages extends Component {
     };
     const { conversationBackgroundColor, assistBackgoundColor } = this.context;
 
-    return (
-      !connected ? (
+    return !connected ? (
         <Offline locale={language} />
-      ) : showUpdateUI ? (
+    ) : showUpdateUI ? (
         <IosUpdateUI />
-      ) : (
-        <div id="rw-messages" style={{ backgroundColor: conversationBackgroundColor }} className="rw-messages-container" ref={this.messagesRef} onScroll={(e) => handleScroll(e)} >
-          {renderMessages()}
-          {displayTypingIndication && (
-            <div className="rw-message rw-typing-indication rw-with-avatar">
-              <img src={liveAgent ? agentAvatar : profileAvatar} className="rw-avatar" alt="profile" />
-              <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
-                <div id="wave">
-                  <span className="rw-dot" />
-                  <span className="rw-dot" />
-                  <span className="rw-dot" />
+    ) : (
+        <div
+            id="rw-messages"
+            style={{ backgroundColor: conversationBackgroundColor }}
+            className="rw-messages-container"
+            ref={this.messagesRef}
+            onScroll={e => handleScroll(e)}
+        >
+            <Disclaimer locale={language} />
+            {renderMessages()}
+            {displayTypingIndication && (
+                <div className="rw-message rw-typing-indication rw-with-avatar">
+                    <img
+                        src={liveAgent ? agentAvatar : profileAvatar}
+                        className="rw-avatar"
+                        alt="profile"
+                    />
+                    <div style={{ backgroundColor: assistBackgoundColor }} className="rw-response">
+                        <div id="wave">
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                            <span className="rw-dot" />
+                        </div>
+                    </div>
                 </div>
-              </div>
-            </div>
-          )}
-        </div>)
+            )}
+        </div>
     );
   }
 }

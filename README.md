@@ -1,3 +1,9 @@
+- v1.1.40
+1. Change Rasa-webchat exposed props from isLoggedin to muid. The child component of Widget was maintained the same props isLoggedIn.
+2. Modified scroll to top to scroll to unread previous messages.
+3. Set live-agent mode cookie value from the response of resendWelcome message API.
+4. Add Disclaimer UI, imageUpload component, and input maxLength logic.
+
 - v1.1.39
 1. Changed sessionID from session_confirm instead of localStorage.
 
