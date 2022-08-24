@@ -374,6 +374,8 @@ class Widget extends Component {
       muid
     } = this.props;
     if (!socket.isInitialized()) {
+      // set mode to end before socket connect
+      document.cookie = 'mode=live_agent_end';
       socket.createSocket();
 
       socket.on('bot_uttered', (botUttered) => {
