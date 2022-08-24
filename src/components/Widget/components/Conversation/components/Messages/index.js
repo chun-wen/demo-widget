@@ -10,7 +10,7 @@ import { Video, Image, Message, Carousel, Buttons, Offline, IosUpdateUI, Disclai
 import './styles.scss';
 import ThemeContext from '../../../../ThemeContext';
 
-import { addAllOldMessage } from "actions";
+import { addAllOldMessage, toggleLiveAgent } from "actions";
 import { fetchOldMessage, resendWelcomeMessage } from "./server/fetchData";
 
 const isToday = (date) => {
@@ -97,11 +97,13 @@ class Messages extends Component {
   }
 
   async getInitMessagesFromServer() {
-    const { props: { oldMessageURL, sessionId } } = this;
+    const { props: { oldMessageURL, sessionId, dispatch } } = this;
     if (!sessionId) return;
     await this.fetchMessageRequest();
     // api trigger event to send welcome messages to client who lost connection over ten minutes
-    await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
+    const result = await resendWelcomeMessage(oldMessageURL, sessionId, this.latestTimestamp);
+    document.cookie = `mode=${result.mode}`;
+    this.props.dispatch(toggleLiveAgent(result.mode));
     scrollToBottom();
   }
 
