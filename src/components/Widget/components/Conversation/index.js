@@ -7,39 +7,43 @@ import Sender from './components/Sender';
 import './style.scss';
 
 const Conversation = props =>
-  <div className="rw-conversation-container">
-    <Header
-      title={props.title}
-      subtitle={props.subtitle}
-      toggleChat={props.toggleChat}
-      toggleFullScreen={props.toggleFullScreen}
-      fullScreenMode={props.fullScreenMode}
-      showCloseButton={props.showCloseButton}
-      showFullScreenButton={props.showFullScreenButton}
-      closeImage={props.closeImage}
-      profileAvatar={props.profileAvatar}
-    />
-    <Messages
-      profileAvatar={props.profileAvatar}
-      params={props.params}
-      customComponent={props.customComponent}
-      showMessageDate={props.showMessageDate}
-      agentAvatar={props.agentAvatar}
-      isLoggedIn={props.isLoggedIn}
-      liveAgent={props.liveAgent}
-      connected={props.connected}
-      language={props.language}
-      showUpdateUI={props.showUpdateUI}
-      sessionId={props.sessionId}
-      oldMessageURL={props.oldMessageURL}
-    />
-    <Sender
-      sendMessage={props.sendMessage}
-      disabledInput={props.disabledInput}
-      inputTextFieldHint={props.inputTextFieldHint}
-      connected={props.connected}
-    />
-  </div>;
+    <div className="rw-conversation-container">
+        <Header
+            title={props.title}
+            subtitle={props.subtitle}
+            toggleChat={props.toggleChat}
+            toggleFullScreen={props.toggleFullScreen}
+            fullScreenMode={props.fullScreenMode}
+            showCloseButton={props.showCloseButton}
+            showFullScreenButton={props.showFullScreenButton}
+            closeImage={props.closeImage}
+            profileAvatar={props.profileAvatar}
+        />
+        <Messages
+            profileAvatar={props.profileAvatar}
+            params={props.params}
+            customComponent={props.customComponent}
+            showMessageDate={props.showMessageDate}
+            agentAvatar={props.agentAvatar}
+            isLoggedIn={props.isLoggedIn}
+            liveAgent={props.liveAgent}
+            connected={props.connected}
+            language={props.language}
+            showUpdateUI={props.showUpdateUI}
+            sessionId={props.sessionId}
+            oldMessageURL={props.oldMessageURL}
+        />
+        <Sender
+            sendMessage={props.sendMessage}
+            disabledInput={props.disabledInput}
+            inputTextFieldHint={props.inputTextFieldHint}
+            connected={props.connected}
+            uploadImageIcon={props.uploadImageIcon}
+            imageServerUrl={props.imageServerUrl}
+            liveAgent={props.liveAgent}
+            sendImageUrl={props.sendImageUrl}
+        />
+    </div>;
 
 Conversation.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
@@ -47,6 +51,9 @@ Conversation.propTypes = {
   sendMessage: PropTypes.func,
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
+  showUpdateUI: PropTypes.bool,
+  uploadImageIcon: PropTypes.string,
+  imageServerUrl: PropTypes.string,
   isLoggedIn: PropTypes.bool,
   oldMessageURL: PropTypes.string,
   sessionId: PropTypes.string,

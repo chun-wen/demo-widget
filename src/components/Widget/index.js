@@ -576,40 +576,50 @@ class Widget extends Component {
     event.target.message.value = '';
   }
 
+  handelImageUrlSubmit(imageUrl) {
+    if (imageUrl) {
+        this.props.dispatch(addUserMessage(imageUrl));
+        this.props.dispatch(emitUserMessage(imageUrl));
+    }
+  }
+
   render() {
     return (
-      <WidgetLayout
-        toggleChat={() => this.toggleConversation()}
-        toggleFullScreen={() => this.toggleFullScreen()}
-        onSendMessage={event => this.handleMessageSubmit(event)}
-        title={this.props.title}
-        subtitle={this.props.subtitle}
-        customData={this.props.customData}
-        profileAvatar={this.props.profileAvatar}
-        agentAvatar={this.props.agentAvatar}
-        oldMessageURL={this.props.oldMessageURL}
-        liveAgent={this.props.liveAgent}
-        language={this.props.language}
-        showUpdateUI={this.props.showUpdateUI}
-        sessionId={this.state.remoteId}
-        isLoggedIn={this.props.isLoggedIn}
-        showCloseButton={this.props.showCloseButton}
-        showFullScreenButton={this.props.showFullScreenButton}
-        hideWhenNotConnected={this.props.hideWhenNotConnected}
-        fullScreenMode={this.props.fullScreenMode}
-        isChatOpen={this.props.isChatOpen}
-        isChatVisible={this.props.isChatVisible}
-        badge={this.props.badge}
-        embedded={this.props.embedded}
-        params={this.props.params}
-        openLauncherImage={this.props.openLauncherImage}
-        inputTextFieldHint={this.props.inputTextFieldHint}
-        closeImage={this.props.closeImage}
-        customComponent={this.props.customComponent}
-        displayUnreadCount={this.props.displayUnreadCount}
-        showMessageDate={this.props.showMessageDate}
-        tooltipPayload={this.props.tooltipPayload}
-      />
+        <WidgetLayout
+            toggleChat={() => this.toggleConversation()}
+            toggleFullScreen={() => this.toggleFullScreen()}
+            onSendMessage={event => this.handleMessageSubmit(event)}
+            onSendImageUrl={this.handelImageUrlSubmit.bind(this)}
+            title={this.props.title}
+            subtitle={this.props.subtitle}
+            customData={this.props.customData}
+            profileAvatar={this.props.profileAvatar}
+            agentAvatar={this.props.agentAvatar}
+            uploadImageIcon={this.props.uploadImageIcon}
+            imageServerUrl={this.props.imageServerUrl}
+            oldMessageURL={this.props.oldMessageURL}
+            liveAgent={this.props.liveAgent}
+            language={this.props.language}
+            showUpdateUI={this.props.showUpdateUI}
+            sessionId={this.state.remoteId}
+            isLoggedIn={this.props.isLoggedIn}
+            showCloseButton={this.props.showCloseButton}
+            showFullScreenButton={this.props.showFullScreenButton}
+            hideWhenNotConnected={this.props.hideWhenNotConnected}
+            fullScreenMode={this.props.fullScreenMode}
+            isChatOpen={this.props.isChatOpen}
+            isChatVisible={this.props.isChatVisible}
+            badge={this.props.badge}
+            embedded={this.props.embedded}
+            params={this.props.params}
+            openLauncherImage={this.props.openLauncherImage}
+            inputTextFieldHint={this.props.inputTextFieldHint}
+            closeImage={this.props.closeImage}
+            customComponent={this.props.customComponent}
+            displayUnreadCount={this.props.displayUnreadCount}
+            showMessageDate={this.props.showMessageDate}
+            tooltipPayload={this.props.tooltipPayload}
+        />
     );
   }
 }
@@ -636,6 +646,8 @@ Widget.propTypes = {
   profileAvatar: PropTypes.string,
   agentAvatar: PropTypes.string,
   liveAgent: PropTypes.bool,
+  uploadImageIcon: PropTypes.string,
+  imageServerUrl: PropTypes.string,
   language: PropTypes.oneOf(['zh', 'en']),
   showUpdateUI: PropTypes.bool,
   isLoggedIn: PropTypes.bool,
