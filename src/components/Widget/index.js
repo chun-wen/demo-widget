@@ -33,7 +33,8 @@ import {
   setDomHighlight,
   evalUrl,
   setCustomCss,
-  toggleLiveAgent
+  toggleLiveAgent,
+  toggleInputDisabled
 } from 'actions';
 import { safeQuerySelectorAll } from 'utils/dom';
 import { SESSION_NAME, NEXT_MESSAGE } from 'constants';
@@ -555,8 +556,10 @@ class Widget extends Component {
       );
     } else if (isLiveAgent(messageClean)) {
       const mode = messageClean.attachment.payload.elements.mode;
+      const disabled = mode === 'update_queue' ? true : false;
       document.cookie = `mode=${mode}`;
       this.props.dispatch(toggleLiveAgent(mode));
+      this.props.dispatch(toggleInputDisabled(disabled));
     } else {
       // some custom message
       const props = messageClean;
