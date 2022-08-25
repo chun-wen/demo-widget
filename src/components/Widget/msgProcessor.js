@@ -40,8 +40,6 @@ export function isLiveAgent(message) {
           Object.keys(message.attachment.payload).indexOf('template_type') >= 0 &&
           message.attachment.payload.template_type === 'generic' &&
           Object.keys(message.attachment.payload).indexOf('elements') >= 0 &&
-          Object.keys(message.attachment.payload.elements).includes('mode') &&
-          message.attachment.payload.elements.mode === 'connection_success') ||
-          message.attachment.payload.elements.mode === 'live_agent_end'
+          Object.keys(message.attachment.payload.elements).includes('mode')) 
   );
 }
